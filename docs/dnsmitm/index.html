@@ -668,7 +668,7 @@ successfully implant an IP, it can still cause denial of service because
 the correct interface. You should be poisoning the 10.x.x.x interface.</li> 
 <li>Signing of the zone file must be run in <tt>/etc/bind/zones</tt> directory.
 <li>Bind is really picky about the syntax of its configuration files. To detect where a problem may be if bind refuses to start use <tt>named-checkconf</tt> tool.
-  <li>If ad bit is not set check that: (1) you are running the command on <tt>client<//t> node and that you have added trust anchors on <tt>cache</tt>. These <a href="https://www.cyberciti.biz/faq/unix-linux-test-and-validate-dnssec-using-dig-command-line/">troubleshooting tricks</a> may be useful.
+  <li>If AD bit is not set check that: (1) you are running the command on <tt>client<//t> node and that you have added trust anchors on <tt>cache</tt>. These <a href="https://bind9.readthedocs.io/en/v9.18.4/chapter7.html">guidelines</a> may be useful. The key you want to add should be from the <tt>auth</tt> machine (the public zone signing key, the shorter one) and it goes into <tt>named.conf.options</tt>. Do not forget to restart <tt>named</tt> service.
 </ul> 
 
 </div>
