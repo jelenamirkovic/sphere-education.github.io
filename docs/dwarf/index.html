@@ -7,15 +7,15 @@
 
 <meta name="robots" content="index,nofollow">
 
-<title>An Introduction to Dwarf</title>
+<title>Binary Analysis: An Introduction to Dwarf</title>
 
 
 
 
 <link rel="stylesheet" type="text/css" charset="utf-8" media="all" 
-href="https://www.isi.deterlab.net/common.css">
+href="../../css//common.css">
 <link rel="stylesheet" type="text/css" charset="utf-8" media="screen" 
-href="https://www.isi.deterlab.net/screen.css">
+href="../../css//screen.css">
 </head><body dir="ltr" lang="en">
 
 <div id="page" dir="ltr" lang="en">
@@ -50,8 +50,6 @@ href="https://www.isi.deterlab.net/screen.css">
 	<ol>
 <li><a href="#setup">Setup </a>
   <li><a href="#code">Analyze binary2.out</a>
-  <li><a href="#visual">Double-check your answers</a>
-
 </ol>
 </li>
 </li><li><a href="#submission">Submission Instructions</a>
@@ -63,12 +61,9 @@ href="https://www.isi.deterlab.net/screen.css">
 <h2>Overview</h2>
 
 <p> In this exercise, we review different types of compiled binaries and the structure of debugging information
-	in binary programs, and we will learn how debuggers use this information. You can follow along if you swap in an experiment on DeterLab using <tt>/share/education/DWARF_USC_ISI/dwarf.ns</tt>.
+	in binary programs, and we will learn how debuggers use this information. 
 </p>
 
-
-<p>For the examples in this tutorial, download file binary1.out from <a href="binary1.out" download>here</a>. You can also copy this file from <tt>/share/education/DWARF_USC_ISI/binary1.out</tt> on DeterLab.</p>. 
-</p>
 
 
 </p><h2 class="anchor" id="reading">Required Reading</h2>
@@ -101,13 +96,9 @@ href="https://www.isi.deterlab.net/screen.css">
 	starts to be executed (e.g., main function in the program). 
 
 </p><p>The following code shows how to detect the type of binary. 
-  In order to run the code, we first need to install pyelftools, which is a parser for elf binaries. On DeterLab, on your experimental node, you can install pyelftools by typing:
-  <pre>
-    sudo apt install python3-pip -y
-    pip3 install -i https://fbsd-build.isi.deterlab.net/pypi/web/simple pyelftools
-    </pre>
+  In order to run the code, we first need to install pyelftools, which is a parser for elf binaries. In your experiment pyelftools are already installed. 
 
-Below you can see analysis code we will use. You can also download the code from <a href= "script1.py" download>here</a> or copy it from <tt>/share/education/DWARF_USC_ISI/script1.py</tt>. Change the 'path to binary' to point to binary1.out on your disk.
+Below you can see analysis code we will use. You can also access this code on your <tt>analysis</tt> node, in <tt>/tmp/analysis</tt> directory. Change the 'path to binary' to point to binary1.out on your disk (also in <tt>/tmp/analysis</tt> directory).
 
 <div class="highlight" style="background: #f0f0f0"><pre style="line-height: 125%; font-size: small;"><span></span>
 from elftools.elf.elffile import ELFFile
@@ -124,7 +115,7 @@ with open(filename, 'rb') as file:
   <pre>
     python3 script1.py
   </pre>
-  you should see "ET_DYN", which indicates that binary1.out is a dynammic shared library.
+  you should see "ET_DYN", which indicates that binary1.out is a dynamic shared library.
 
 <h3 class="anchor" id="sec">Debug Sections in Binary</h3>
 
@@ -139,7 +130,7 @@ with open(filename, 'rb') as file:
 	If you want to analyze whether your binary file 
 		contains debug information or not, you can use the following command.
 		
-	<pre >file binary_file
+	<pre>file binary_file
 	</pre>
 	</p><p>If the binary file is compiled with debug information, you will see this result.
 		<pre >“with debug_info, not stripped”  
@@ -174,7 +165,7 @@ units.
 
 	 
 </p>
-<p> Now we give a short script to extract the name of functions in the dwarf info section. You can download the code from <a href="script2.py" download>here</a> or copy it from <tt>/share/education/DWARF_USC_ISI/script2.py</tt>.</p>
+<p> Now we give a short script to extract the name of functions in the dwarf info section. You can access the code on <tt>analysis</tt> node in <tt>/tmp/analysis</tt> folder. The code is <tt>script2.py</tt>.</p>
  
 <p>This code will print the name of the functions in binary1.out, which have a "DW_TAG_subprogram" tag.</p>
 
@@ -253,7 +244,7 @@ _Buffer_Overflow__CWE129_rand_51a.c           96              0x1506
 the dwarf info section, and then you can explore its memory locations.
 
 </p>
-<p>The code below extracts the mapping between source code and memory offsets for each compilation unit. You can download code from <a href='script3.py' download>here</a> or copy it from <tt>/share/education/DWARF_USC_ISI/script3.py</tt>.</p>
+<p>The code below extracts the mapping between source code and memory offsets for each compilation unit. You can access the code on your <tt>analysis</tt> node in <tt>/tmp/analysis/</tt> folder. The code is <tt>script3.py</tt>.</p>
 
 <div class="highlight" style="background: #f0f0f0"><pre style="line-height: 125%; font-size: small;"><span></span>
 	import argparse
@@ -306,18 +297,13 @@ the dwarf info section, and then you can explore its memory locations.
 </p>
 </p></div>
 </p><h2 class="anchor" id="assignment">Assigment Instructions</h2>
-In this excersie, you will practice everything you have learned. For this assigment, we will use the file binary2.out from <a href="binary2.out" download>here</a>. You can also copy it from  <tt>/share/education/DWARF_USC_ISI/binary2.out</tt>.</p>
+In this excersie, you will practice everything you have learned. For this assigment, we will use the file binary2.out from <tt>/tmp/analysis</tt> on your <tt>analysis</tt> node. 
 
 <h3 class="anchor" id="setup">Setup</h3>
 <ol>
-  <li>Log into DeterLab and create an experiment using the NS file  <tt>/share/education/DWARF_USC_ISI/dwarf.ns</tt>. Swap it in.</p>
-<li>Access your experimental node by SSH-ing to <tt>users.deterlab.net</tt> and then to <tt>analysis.YourExperiment.YourProject</tt>.
-<li>Install pip3 and pyelftools:
-    <pre>
-    sudo apt install python3-pip -y
-    pip3 install -i https://fbsd-build.isi.deterlab.net/pypi/web/simple pyelftools
-    </pre>
-  </ol>
+	<ol type="1"><li><p />If you don't have an account, follow the instructions <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/classes/">here</a>.
+</li><li>Create an instance of this exercise by following the instructions <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/classes/#working-on-assignments">here</a>, using <font color=red>dwarf</font> as Lab name.  Your topology will look like below:<p><img src="topo.png">.
+</li><li>After setting up the lab, access your <tt>analysis</tt> node. <p /></ol></ol><p />
 
 <h3 class="anchor" id="code">Analyze binary2.out</h3>
 
@@ -329,16 +315,6 @@ In this excersie, you will practice everything you have learned. For this assigm
     <li> Write a script to extract memory offsets corresponding to line number 33 for each compilation unit. Run it and show the output. You can start with script3.py and modify it.
       </ol>
 </pre></div>
-
-<h3 class="anchor" id="visual">Double-check your answers</h3>
-
-    <ol>
-<li> Log into  <a href="https://binary.deterlab.net/">https://binary.deterlab.net/</a> using your DeterLab credentials
-<li> Choose a name for your project
-  <li> Upload binary2.out
-  <li> Refresh your page to change the status of your project from preparing to ready. You should be able to see any information about binary functions at the top right corner of the page. Compare the results with the output
-    of your script.
-    </ol>
 
 <h2 class="anchor" id="submission">Submission Instructions</h2>
 

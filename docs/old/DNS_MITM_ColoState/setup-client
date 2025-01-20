@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cp /share/education/DNS_MITM_ColoState/resolv.conf.client /etc/resolv.conf
-

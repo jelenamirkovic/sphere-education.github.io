@@ -1,8 +1,0 @@
-run as sudo snort -d -l /var/log/snort/ -h 172.16.0.0/16 -A console -c /etc/snort/snort.conf -i eth1
- sudo snort --daq nfq -Q -v works too
- we do sudo snort  --daq nfq -Q -c /etc/snort/snort.conf  -A console
-
- do hping3 and nmap, install nmap and hping3
- do new rule for ICMP flood
-
-ask students to modify snort.debian.conf 

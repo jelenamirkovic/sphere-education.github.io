@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-apt update --fix-missing -y
-apt install net-tools

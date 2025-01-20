@@ -1,4 +1,0 @@
-#!/usr/bin/bash
-
-apt update -y
-apt install net-tools -y

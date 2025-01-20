@@ -1,2 +1,0 @@
-nohup bash /tmp/attacker/slowloris/attack.sh > /dev/null &
-

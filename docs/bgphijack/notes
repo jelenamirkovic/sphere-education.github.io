@@ -1,2 +1,0 @@
-on asn4 when hijacking must ip route add 10.1.1.0/24 also hijack this route
-change the exercise to check what asn1 is doing

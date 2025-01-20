@@ -1,5 +1,0 @@
-#!/bin/bash
-sudo DEBIAN_FRONTEND=noninteractive apt-get install flex -y
-cp -r /share/education/ResilientServerGamified_USC/flooder /usr/local/src
-cd /usr/local/src/flooder; sudo make; sudo cp flooder /bin
-sudo /bin/bash  /share/education/ResilientServerGamified_USC/install-client &

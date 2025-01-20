@@ -1,7 +1,0 @@
-#!/usr/bin/bash
-
-apt update -y
-apt install vsftpd -y
-cp /tmp/server/vsftpd.conf /etc
-cp /tmp/server/docs/* /srv/ftp
-service vsftpd restart
