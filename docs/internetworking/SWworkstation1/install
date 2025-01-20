@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+apt update -y
+apt install gawk net-tools apache2 -y
+host=`hostname | awk -F'.' '{print $1}'`
+/tmp/$host/deaddress > /tmp/deadress.log
+

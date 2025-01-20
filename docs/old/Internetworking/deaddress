@@ -1,0 +1,53 @@
+
+#!/bin/bash
+#
+# adaptation of nicaddressing, which prints a table of interfaces that have IPs, like:
+#
+#               eth1    66.159.240.70
+#               eth2    192.168.2.1
+#
+# This goes a step beyond, removing those IPs and put the interfaces "down" instead of just printing out.
+
+if hostname | grep swworkstation1 &> /dev/null; then
+	# install apache2 if it's absent
+	if ! dpkg -s apache2 | grep "Status: install ok installed" &> /dev/null; then
+		sudo apt-get  -y install  apache2 &> /dev/null
+	fi
+fi
+
+if hostname | grep nwworkstation1 &> /dev/null; then
+	# install lynx if it's absent
+	echo "NW"
+	if ! dpkg -s lynx | grep "Status: install ok installed" &> /dev/null; then
+		sudo apt-get  -y install  lynx &> /dev/null
+	fi
+fi
+
+
+
+
+# put utility script that identifies NIC names in the PATH
+sudo cp  /share/shared/Internetworking/nicaddressing /usr/local/bin/
+
+# do the deaddressing
+/usr/local/bin/nicaddressing > /tmp/nicaddressing.dat
+
+sudo cp  /share/shared/Internetworking/deaddress /usr/local/bin/
+
+for n in 0 1 2 3 4 5
+do
+	ETH=$( ifconfig -a | grep -A1 "eth$n" | grep eth | cut -d : -f 1 | gawk '{print $1}' )
+        IP=$( ifconfig -a | grep -A1 "eth$n" | grep "inet" | cut -d : -f 2 | gawk '{print $2}' )
+        if [ "$IP" ]; then
+		if ! echo $IP | grep "192.168" > /dev/null; then
+			# record address-interface matchups in /tmp/nicaddressing.dat on each node
+			# then strip off addresses to leave a clean slate for students to apply their own
+			# (script "showcabling" on users.isi.deterlab.net later reads all /tmp/nicaddressing.dat files
+			# to produce a global interface map what-is-cabled-to-what)
+			#
+			#   	/bin/echo -e "$IP\t$ETH" >> /tmp/nicaddressing.dat
+			sudo ifconfig $ETH 0
+			sudo ifconfig $ETH down
+		fi
+        fi
+done

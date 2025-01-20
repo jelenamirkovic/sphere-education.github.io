@@ -1,0 +1,18 @@
+#! /bin/sh
+
+WORKDIR=`pwd`
+NODES=8
+NODECOUNT=1
+
+./paws_server &
+while [ $NODES -ge $NODECOUNT ]
+do
+    echo "Starting node "$NODECOUNT
+    ssh node-$NODECOUNT "cd $WORKDIR;./paws_client > log$NODECOUNT.dat" &    
+    NODECOUNT=`expr $NODECOUNT + 1`    
+    sleep 1
+done
+
+
+
+

@@ -1,0 +1,37 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+## Nodes
+foreach node { asn1 asn2 asn3 asn4 server client attacker } {
+  set $node [$ns node]
+  tb-set-node-os [set $node] Ubuntu-EDU
+  tb-set-node-startcmd [set $node] "sudo /share/education/BGPHijack_ColoState/install-common.sh >& /tmp/install.log"
+ }
+
+set link1 [$ns duplex-link $server $asn1 100Mb 0ms DropTail]
+tb-set-ip $server 10.1.1.2
+tb-set-ip-link $asn1 $link1 10.1.1.1
+
+set link2 [$ns duplex-link $asn1 $asn2 100Mb 0ms DropTail]
+tb-set-ip-link $asn1 $link2 10.2.0.1
+tb-set-ip-link $asn2 $link2 10.2.0.2
+
+set link3 [$ns duplex-link $asn2 $asn3 100Mb 0ms DropTail]
+tb-set-ip-link $asn2 $link3 10.3.0.2
+tb-set-ip-link $asn3 $link3 10.3.0.1
+
+set link4 [$ns duplex-link $asn3 $asn4 100Mb 0ms DropTail]
+tb-set-ip-link $asn3 $link4 10.4.0.1
+tb-set-ip-link $asn4 $link4 10.4.0.2
+
+set link5 [$ns duplex-link $client $asn3 100Mb 0ms DropTail]
+tb-set-ip $client 10.5.0.2
+tb-set-ip-link $asn3 $link5 10.5.0.1
+
+set link6 [$ns duplex-link $attacker $asn4 100Mb 0ms DropTail]
+tb-set-ip $attacker 10.6.1.2
+tb-set-ip-link $asn4 $link6 10.6.1.1
+
+
+$ns rtproto Manual
+$ns run

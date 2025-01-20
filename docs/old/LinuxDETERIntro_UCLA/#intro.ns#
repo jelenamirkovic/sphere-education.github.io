@@ -1,0 +1,10 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+set intro [$ns node]
+tb-set-node-os $intro Ubuntu-STD
+tb-set-node-startcmd $intro "sudo /share/education/LinuxDETERIntro_UCLA/install >& /tmp/labinstall.log"
+
+$ns rtproto Static
+$ns run
+

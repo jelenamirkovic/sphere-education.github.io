@@ -1,0 +1,8 @@
+from mergexp import *
+# create a topology named 'ctfbank'
+net = Network('ctfbank', addressing==ipv4, routing==static)
+nodes = [net.node(name, image == 'bullseye-edu') for name in [ 'blueserver','redserver' ]]
+link1 = net.connect([nodes[0],nodes[1]])
+link1[nodes[0]].socket.addrs = ip4('1.1.1.1/8')
+link1[nodes[1]].socket.addrs = ip4('1.1.1.2/8')
+experiment(net)

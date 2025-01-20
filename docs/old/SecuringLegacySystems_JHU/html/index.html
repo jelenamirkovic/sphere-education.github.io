@@ -1,0 +1,278 @@
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="index,nofollow">
+
+<title>Securing Legacy Systems - JHUISI</title>
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all" 
+href="https://www.isi.deterlab.net/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen" 
+href="https://www.isi.deterlab.net/screen.css">
+
+
+
+</head><body dir="ltr" lang="en">
+
+<div id="page" dir="ltr" lang="en">
+<h1>Securing Legacy Systems - JHUISI</h1>
+<div class="author">Created by: Jeff Mates, JHUISI, jmates1@jhu.edu.<br>
+</div>
+
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+</li><li><a href="#reading">Recommended Readings</a>
+</li><li><a href="#intro">Introduction</a>
+</li><li><a href="#assignment">Assignment Instructions</a>
+<ol>
+<li><a href="#setup">Setup</a>
+</li><li><a href="#basictasks">Basic Tasks</a>
+<ol>
+<li><a href="#norules">Activate Snort Without Rules</a>
+</li><li><a href="#traffic">Analyze Network Traffic</a>
+</li><li><a href="#basicrules">Write Rules to Guard Against Simple Requests</a>
+</li></ol>
+
+</li><li><a href="#intermediatetasks">Intermediate Tasks</a>
+<ol>
+<li><a href="#dos">DOS Defense</a>
+</li><li><a href="#protection">Securing Traffic on the Network</a>
+</li></ol>
+
+</li><li><a href="#advancedtasks">Advanced Tasks</a>
+<ol>
+<li><a href="#execution">Code Execution Vulnerability</a>
+</li><li><a href="#encoding">Defend Against ASCII Encoding</a>
+</li></ol>
+
+</li><li><a href="#glitches">What Can Go Wrong</a>
+</li></ol>
+</li><li><a href="#submission">Submission Instructions</a>
+
+</li></ol>
+</div>
+
+<span class="anchor" id="overview" /> 
+<h2>Overview</h2>
+
+<p>This exercise demonstrates how Snort and similar inline intrusion detection / prevention systems can be used to help secure legacy software by walking them through an environment that includes an extremely insecure application.</p>
+<p>Depending on their skill level students will be asked to analyze network the network traffic produced by this program, to write Snort rules to protect against known attacks against this program and to create a sample attack against this program which they will be asked to guard against.</p>
+
+<span class="anchor" id="reading" /> 
+</p><h2>Recommended Reading</h2>
+
+<p>The following information may be useful in completing this exercise.</p>
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Snort_(software)" target="new">Short summary of Snort on Wikipedia</a>
+</li><li>SYN flood attacks in the <a href="https://www.snort.org/#documents" target="new">The Snort Manual</a>
+</li><li>A guide to creating <a href="http://www.sans.org/reading_room/whitepapers/tools/developing-snort-dynamic-preprocessor_32874" target="new">Snort Preprocessors</a>
+</li></ul>
+
+
+<span class="anchor" id="intro" /> 
+<h2>Introduction</h2>
+
+<p>When working in the field of network security it is not always possible to ensure the security of legacy applications.  Many businesses and organizations use systems that are known to be highly insecure and will continue to do so for the foreseeable future as it would not be cost effective to replace or modify these programs.  As such the best we can do to improve the security of these systems is to place them behind filters that can be controlled.</p>
+<p>In this exercise you will be using Snort to help secure a highly insecure application without modifying the application itself.  This application functions as a simple password protected file server for plain text documents, and it is up to you to use Snort to help protect this information.</p>
+<p>This network is broken into three chunks.  The first chunk contains the work environment which houses the legacy server along with a single client machine.  This network is protected by the Snort router, which is set not to permit any traffic through at at the start of this exercise.  The second network contains a single outsider machine.  Finally
+ the third contains two client computers.  All of these networks are connected to each other using a single router.</p>
+<span class="anchor" id="assignment" /> 
+<h2>Assignment Instructions</h2>
+
+
+<span class="anchor" id="setup" />
+<div class="level3"><h2>Setup</h2>
+
+<p>You should load the supplied topology file into the DETER testbed to create a new experiment.  You can load this file directly in DeterLab's by selecting it using the path <tt>/share/education/SecuringLegacySystems_JHU/SecuringSystems.ns</tt>. <b>Do not modify the topology file</b> but read it through and identify what each directive does.  This file includes links to scripts that configure Snort for later use which may prove useful in the future.  It will take several minutes for the required configuration to be completed once DeterLabs has finished its initial setup, so please be patient. 
+
+
+<div class="level3">
+<h2>Basic Tasks</h2>
+<span class="anchor" id="basictasks" />
+
+<span class="anchor" id="norules" />
+<h3>Start Snort Without Rules</h3>
+<ol>
+ <li>Open an SSH client on your computer such as putty and connect to users.deterlab.net
+  </li><li>Login using your Deter username and password
+  </li><li>SSH into snort.[experiment name].[project name] 
+  </li><li>Start snort without any rules by entering the command "sudo snort --daq nfq -Q -v".  If you receive a warning about Snort not being installed wait two minutes and try again.  If you continue to receive this message make sure that you logged into Snort machine rather than another node.
+ </li><li>You should see a large number of packets being reported by Snort.
+</li><li>Open another terminal and SSH again into users.deterlab.net and then snort.[experiment name].[project name]. In this terminal run tcpdump to capture the data going to and from the client1.  This should be on the interface with an IP Address in the 10.1.1.0 / 24 range.  You can run tcpdump using the command <tt>sudo tcpdump -i [interface] -s 0 -w /tmp/dump.pcap</tt>
+Allow this to run for 30 seconds and then tcpdump by pressing control + c. Let the Snort process continue running. Now run <pre>sudo /share/education/SecuringLegacySystems_JHU/process.pl /tmp/dump.pcap</pre> This will produce a set of <tt>x,y</tt> coordinates where x is time and y is number of packets in that second.
+  </li></ol>
+  <p><b>Questions:</b>
+	<ol>
+		<li>What happens to the traffic to client1 when Snort is not running?
+		</li><li>Is this a good thing?
+		</li><li>Based on Snort's output what can you say about the application?  What port does it connect to?
+		</li><li>Please attach a graph of the traffic over time to your answers
+		</li><li>What does the "-Q" option do in Snort?
+		</li><li>What does the "--daq nfq" option do in Snort?
+		</li></ol>
+	</ol>
+  </p>
+
+  <span class="anchor" id="traffic" />
+<h3>Analyze Network Traffic</h3>
+<ol>
+ <li>Connect to router.[experiment name].[project name]
+  </li><li>Use ifconfig to determine which network interfaces connect to which network.
+  </li><li>Run tcpdump to capture the data going to the server.  This should be on the interface with an IP Address in the 10.0.1.0 / 24 range.  You can run tcpdump using the command "sudo tcpdump -i [interface] -s 0 -w /tmp/dump.pcap"
+  </li><li>Let this run for around a minute before terminating it by pressing control + c.
+  </li><li>Copy this data to your computer via SCP and open it using Wireshark.  You can use a tool like WinSCP to accomplish this.
+  </li></ol>
+  <p><b>Questions:</b>
+	<ol start="5">
+		</li><li>The request that the client sends the server is broken into four parts.  What are these parts and what order does they appear in?  How are these parts seperated in the request?
+		</li><li>Is this is a secure way for the client to send requests to the server?  Explain your answer.
+		</li><li>Can you recover one of the files sent by the server to a client?  If so attach the file, a pcap the relevant packets and indicate which client this was sent to.
+		</li></ol>
+	</ol>
+  </p>
+  
+  <span class="anchor" id="basicrules" />
+<h3>Write Rules to Guard Against Simple Requests</h3>
+<ol>
+ <li>In that terminal where snort is running stop it by using ctrl + c.
+  </li><li>Use nano to write a configuration file for snort using the command, "nano snort.config"
+ </li><li>Add the following snort rule that prevents .xml files from being sent out,
+    <pre>reject tcp 100.1.0.0/16 ANY -> 100.1.10.10 [Port from Question 3] (msg: "XML Read Attempt Detected"; sid:1; content:".xml";)</pre>
+  </li><li>Using this rule as an example write a rule that prevents classified data from being sent to the outsider computer, but does not prevent it from being sent to any other computers.
+  </li><li>Make a directory for snort alerts using the command "mkdir alerts"
+  </li><li>Start snort using your new rule with the command, "sudo snort --daq nfq -Q -c snort.config -l alerts"
+  </li><li>Log onto client1, client2 and outsider to see if these rules worked.  If you aren't sure go to the folder /home/test and delete the existing .txt and .xml files then see which ones are recreated.  You can also run the program FileClient manually to find out.
+  </li></ol>
+  <p><b>Questions:</b>
+	<ol start="8">
+		</li><li>What rule did you use to secure the "classified" file?
+		</li><li>Capture and compare the network traffic for the serverwhen filtering these results using your configuration file and when no file is used.  Attach the graph showing packet rate over time for both of these cases to your submission.
+		</li><li>Can you think of any others files or extensions that should be filtered against?
+		</li></ol>
+	</ol>
+  </p>
+  </div>
+  
+<div class="level3">
+<span class="anchor" id="intermediatetasks" />
+<h3>Intermediate Tasks</h3>
+
+<span class="anchor" id="dos" />
+<h3>DOS Defense</h3>
+<ol>
+ <li>Make sure you have your filtering rule engaged on Snort
+ </li><li>Using flooder tool on client1 create a packet flood attack against the server from. Set a high rate of 100,000 requests and duration of 100 seconds. Just typing <tt>flooder</tt> on command line should give you a list of options you can use. 
+  </li><li>Create a new Snort configuration that also includes a rate filter rule.  These follow the format, <tt>rate_filter gen_id 1, sig_id [sid of event], track [by_src, by_dst or by_rule], count [number of events], seconds [number of seconds], new_action drop, timeout [number of seconds]</tt>
+  </li><li>You may need to write a new rule for the rate filter to apply to
+  </li><li>Create an event filter for your rate filter.  These follow the format, <tt>event_filter gen_id 1, sig_id [sid_number], track [by_src, by_dst or by_rule], count [number of events], seconds [number of seconds], type [limit, threshold or both]</tt>
+  </li></ol>
+  <p><b>Questions:</b>
+	<ol start="11">
+		</li><li>Collect the traffic at the server and the router when there is and is not an attack with rules in place that only guard against the attacks metioned in the basic exercises. Create a graph of this traffic over time.
+		</li><li>Repeat the previous step but now with the rate filtering rules enabled.
+		</li><li>For a DOS attack should rate filtering rules be paired with event filtering rules?
+		</li><li>Try changing the new action in the rate filter to "reject" instead of "drop".  What does this do to the traffic and why do you think this is?  Is this a good or a bad thing?
+		</li><li>Check which interface Snort connects to the router to using ifconfig.  Once you have this information try the above test against while specifying that interface instead of using the default value.  This argument will look something like <tt>--daq-var device=eth1</tt>.  Did this change your results.  If so attach a graph and explain the change occured.
+		</li><li>Are there any changes you can make outside of Snort to help guard against this attack?  If so what are they?
+		</li><li>Try running the FileClient program from client2 while this attack is underway.  What happens when you have the various rulesets configured?
+		</li></ol>
+	</ol>
+  </p>
+  
+  <span class="anchor" id="protection" />
+<h3>Secure Traffic on the Network</h3>
+<ol>
+  <li>Make sure that Snort is running with all your filtering rules in place
+ <li>Review the pcap data you gathered while analyzing network traffic on the router.  
+ </li><li>Review the network topology on DeterLab UI. Notice that the internal computer is able to bypass Snort entirely
+ </li><li>Verify this by logging onto the internal computer and checking the contents of the folder <tt>/home/test</tt>.  You should see that it is able to freely download files that your rules do not permit.
+ </li><li>Replace the direct route to the server using the command <tt>sudo route add -host server gw snort</tt>
+ </li><li>This should cause traffic to the server to be routed through Snort.  Perform a trace route to verify this with the command <tt>traceroute server</tt>
+ </li></ol>
+  <p><b>Questions:</b>
+	<ol start="18">
+		</li><li>Based on the traffic you analyzed what changes could be made to the network to enhance the security of communications coming from client1, client2 and outsider?
+		</li><li>What software packages would this require and where should these be installed?  Would this cause problems for Snort?
+		</li><li>How should the server be configured to prevent internal attacks?
+		</li><li>Would this require you to change your Snort configuration in any way?
+		</li></ol>
+	</ol>
+  </p>
+ </div>
+ 
+<div class="level3">
+<span class="anchor" id="advancedtasks" />
+<h3>Advanced Tasks</h3>
+
+<span class="anchor" id="execution" />
+<h3>Code Execution Vulnerability</h3>
+<ol>
+ <li>A vulnerability was found with the FileServer that causes it to execute the contents of the filename field if certain conditions are met.
+  </li><li>Download the file /home/test/FileServer.jar from the server.
+  </li><li>Analyze the file using a Java decompiler such as <a href="http://java.decompiler.free.fr/?q=jdgui" target="new">JD-GUI</a> to find the vulnerability.
+  </li></ol>
+  <p><b>Questions:</b>
+	<ol start="22">
+		</li><li>What are the conditions required for this attack to take place?
+		</li><li>Create a Snort rule to defend against this attack.  You may want to be use pcre instead of content for this rule.
+		</li><li>What effect does this rule have on legitimate traffic?
+		</li></ol>
+	</ol>
+  </p>
+
+<span class="anchor" id="encoding" />
+<h3>Defend Against ASCII Encoding</h3>
+<ol>
+ <li>An additional "feature" was recently brought to the attention of the security team, the application has a limited ability to before ASCII decoding.
+  </li><li>This decoding is triggered whenever the server encounters a % followed by a number between 0 and 255 at which point the sequence is converted to a single ASCII character.
+  </li><li>Go to the directory /usr/local/snort-2.9.2.2/src/dynamic-examples/dynamic-preprocessor
+  </li><li>This contains an example Snort preprocessor.  Snort preprocessors allow for advanced data manipulation to normalize data and perform other functions that normal rules cannot.  All Snort preprocessors are coded in C.
+  </li><li>Open up spp_example.c and take a look at the structure.  The main function of interest to you in this case is ExampleProcess which is used to process packet data before other rules have a chance to access it.
+  </li><li>Copy the include folder using the command <tt>sudo cp /usr/local/snort-2.9.2.2/src/dynamic-preprocessors/include/ ..</tt>
+  </li><li>You should now be able to compile and install this preprocessor using the command <tt>sudo make && sudo make install</tt>.
+ </li><li>Once this has been installed you can use this preprocessor in Snort.  To do this edit your configuration file by adding the following lines at the top of the file which tell Snort to auto-generate the decoder rules so you don't have to, the location of the preprocessor library and the preprocessor you wish to use along with all of its arguments (in this case just the port to use):
+    <pre>
+	config autogenerate_preprocessor_decoder_rules
+	dynamicpreprocessor directory /usr/local/lib/snort_dynamicpreprocessor/
+	preprocessor dynamic_example: port [Port from Question 3]
+</pre>
+  </li><li>Once you have made these changes try to run Snort using your configuration file.  At this point it should behave exactly as before, but it now has a preprocessor loaded which you can edit to meet your needs as an ASCII decoder.
+  <p><b>Questions:</b>
+	<ol start="25">
+		</li><li>Were you able to bypass your existing rules because of this feature?  If so what input strings did you use?
+		</li><li>Can you think of a content rule to effectively defend against an attack that uses this feature?  Would this affect legitimate traffic?
+		</li><li>Snort includes support for user written preprocessors that can render data for Snort's other rules.  How would the use of a preprocessor help with this task?
+		</li><li>Write a preprocessor to help with this task.  Please attach all of the functions you used and the snort.config file that called the preprocessor.
+	</li></ol>
+  </p>
+ </div>
+ 
+
+<span class="anchor" id="glitches" />
+<div class="level3">
+<h2>What can go wrong</h2>
+<ul>
+<li><b>Experiment cannot be swapped in</b>. First, check the error message you will receive in the email. One possible reason for this is that the NS file was changed from the one listed above. Verify that the file looks exactly like supplied with this exercise. Another reason may be that there is a lack of available nodes in DETER and the error message will say so. This happens occasionally and usually resources become available in a few hours. If you tried several times and could not find enough resources or could not diagnose why the experiment was not swapping in, forward the error message you get from DETER to your TA.
+</li><li><b>Server Does Not Process Requests</b>. If the server is rebooted you will need to start the server script manually.  This can be found in the folder /home/test.
+</li><li><b>Nodes Cannot Communicate with Server</b> If the server or route cannot communicate with each other when Snort running, make sure that the routing table is correct.  You can check the routing table with the command "route" on both of the computers.  
+</li></ul>
+
+</div>
+
+<span class="anchor" id="submission" /> 
+<h2>Submission Instructions</h2>
+
+You should submit a document with the following items (label each section):
+<ol>
+<li>An explanation of how Snort can be used to protect legacy systems
+</li><li>Screenshots that show how you executed these commands
+</li><li>The contents of all scripts, commands and Snort rules you wrote to solve these challenges
+</li><li>Answers the questions found within each section
+</li></ol>
+
+</div>
+
+</body></html>

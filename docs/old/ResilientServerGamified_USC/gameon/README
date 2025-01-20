@@ -1,0 +1,26 @@
+These instructions outline how to run a gamefied version of this exercise.
+
+1. Swap in your competition just as a regular experiment
+
+2. Run on users:
+   perl /share/education/ResilientServerGamified_USC/start.pl expName projName
+   --- wait about 10 mins for machines to come up after reboot ---
+
+3. Run on users:
+   perl /share/education/ResilientServerGamified_USC/gameon/start.pl expName projName
+
+4. Run on users:
+   perl /share/education/ResilientServerGamified_USC/gameon/gameon.pl expName projName blue red
+   If you want to test blue team's functionalities set blue to 1 and red to 0,
+   otherwise set red to 0 and blue to 1
+
+   example
+   perl /share/education/ResilientServerGamified_USC/gameon/flow_stats/gameon.pl cctfddos usc430 1 0
+   or
+   perl /share/education/ResilientServerGamified_USC/gameon/flow_stats/gameon.pl cctfddos usc430 0 1
+   
+   Monitoring occurs at 1 min granularity so any action takes 1-2 mins
+   to show in monitoring log.
+
+   Make sure to do monitoring first, before you launch any attacks or set
+   filters up

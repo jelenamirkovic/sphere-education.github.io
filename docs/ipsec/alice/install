@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+apt update -y
+apt -y install ftp
+

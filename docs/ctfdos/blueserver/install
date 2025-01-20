@@ -1,0 +1,9 @@
+apt update
+apt install apache2 libapache2-mod-php mariadb-server php-mysqlnd -y
+cp /tmp/blueserver/*.php /var/www/html
+chmod a+rx /var/www/html/*.php
+a2enmod php7.4
+bash /tmp/blueserver/sql-setup
+mysql -u root -proot < /tmp/blueserver/bank.db
+sed -i 's/\;extension=mysqli/extension=mysqli/g'  /etc/php/7.4/apache2/php.ini
+service apache2 restart

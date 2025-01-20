@@ -1,0 +1,11 @@
+from mergexp import *
+# create a topology named 'ctfdos'
+net = Network('ctfdos', addressing==ipv4, routing==static)
+nodes = [net.node(name, image == 'bullseye-edu') for name in [ 'blueserver','redserver','bluerouter', 'whiteserver']]
+link1 = net.connect([nodes[0],nodes[2]], capacity==mbps(10))
+link2 = net.connect([nodes[3],nodes[2]])
+link3 = net.connect([nodes[1],nodes[2]])
+link1[nodes[0]].socket.addrs = ip4('4.4.4.4/8')
+link2[nodes[3]].socket.addrs = ip4('1.1.1.1/16')
+link3[nodes[1]].socket.addrs = ip4('1.2.1.2/16')
+experiment(net)

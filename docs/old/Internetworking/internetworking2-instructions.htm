@@ -1,0 +1,108 @@
+<p align="center"><b><font size="5">Build an internet</font></b>
+</p>
+<p>
+<br>
+In this in-class lab exercise you will work with a group. There will be 3 other
+groups. Each group will build a local network. Then the 4 networks will be
+combined into a single internet. See the <a href="lab2-internetworking.pdf">&quot;Lab
+exercise: build an internet&quot; slides</a>. They blueprint the plan. These
+step-by-step instructions accompany them.</p>
+<p>For building its localnet, your group will be issued a kit consisting of:<br>
+&nbsp;1 switch or hub, with power supply<br>
+&nbsp;1 laptop<br>
+&nbsp;2 USB NICs<br>
+&nbsp;4 cables</p>
+<p>Your localnet will also incorporate 2 of the classroom's existing desktops.
+Do as indicated below.</p>
+<p><br>
+<b>Construct 1 localnet for your group</b><br>
+<br>
+add one of the USB NICs to your laptop<br>
+determine its name<br>
+cable it into your hub/switch<br>
+<br>
+re-cable the 2 closest classroom desktops into your hub/switch<br>
+<br>
+choose an internal network (netaddr &amp; netmask)<br>
+choose 3 of its host addresses and apply them to your 3 hosts<br>
+<br>
+make sure your 3 hosts can ping each other<br>
+<br>
+<br>
+<b>Construct 2 localnets <i>between</i> groups</b><br>
+<br>
+identify the other 2 localnets that are lateral, not diagonal, to you<br>
+(for example, if you are the Northwest localnet, Southeast is diagonal to you so your
+2 lateral localnets are Southwest and Northeast)<br>
+<br>
+add the other USB NIC to your laptop<br>
+determine its name<br>
+cable your laptop's 2 free NICs directly (no hub/switch) to the laptops of your 2 lateral localnets<br>
+do not cable any 2 USB NICs together: from a USB NIC always cable into the lateral localnet's laptop's built-in NIC only<br>
+<br>
+confer separately with the students from those 2 localnets<br>
+with each:<br>
+&nbsp;mutually choose an external network (netaddr &amp; netmask)<br>
+&nbsp;choose 2 of its host addresses<br>
+&nbsp;apply them to your 2 laptops<br>
+&nbsp;make sure your 2 laptops can ping one another<br>
+<br>
+<br>
+<b>Make route table settings, for lateral integration</b></p>
+<p>On your laptop<br>
+&nbsp;add 2 network routes, one to each of the lateral localnets
+(gatewayed through the lateral routers)<br>
+<br>
+On your desktops<br>
+&nbsp;add default routes, on each, to your laptop<br>
+<br>
+make sure your 2 desktops can ping both of your lateral networks' laptops<br>
+make sure your 2 desktops can ping all 4 desktops that belong to your lateral
+networks</p>
+<p><br>
+<b>Make r</b><b>oute table settings, for diagonal integration</b><br>
+<br>
+confer with students from your diagonal localnet<br>
+determine what their local network is (netaddr &amp; netmask)<br>
+<br>
+On your laptop<br>
+&nbsp;add a network route to the diagonal localnet<br>
+<br>
+On your desktops<br>
+&nbsp;do nothing<br>
+<br>
+make sure your laptop can ping both your diagonal network's desktops<br>
+make sure your 2 desktops can ping both your diagonal network's desktops</p>
+<p><br>
+<b>S</b><b>niff traffic on outside of laptop before and after adding IP
+masquerading (network address translation)</b></p>
+<p>on your laptop run tcpdump on one external interface while executing a 1-time
+ping from one of your desktops through that interface (i.e., to either the laptop or a desktop
+in the other group)<br>
+note the source address of the ping request and destination address of the ping
+reply (one and the same address)<br>
+repeat, on your laptop's other external interface</p>
+<p>apply masquerading on both interfaces, using the command for it shown in the
+slides</p>
+<p>now again, on your laptop run tcpdump on one external interface while
+executing a 1-time ping from one of your desktops through that interface<br>
+note the source address of the ping request and destination address of the ping
+reply (one and the same address)<br>
+repeat, on your laptop's other external interface</p>
+<p><br>
+<b>Block (firewall)</b><b> traffic, on outside of laptop, from leaving</b></p>
+<p>apply firewalling on one of your laptop's external interfaces, using the
+command for it shown in the slides<br>
+run tcpdump on that firewalled interface while executing a 1-time ping from one
+of your desktops through that interface<br>
+run tcpdump on the laptop's other unfirewalled external interface while
+executing a 1-time ping from one of your desktops through that interface</p>
+<p>undo the firewalling<br>
+run tcpdump on that formerly firewalled interface while executing a 1-time ping
+from one of your desktops through that interface</p>
+<p><b><br>
+When finished</b>&nbsp;</p>
+<p>shutdown laptops<br>
+disconnect equipment<br>
+recompose and return your kit<br>
+re-cable desktops to classroom network</p>

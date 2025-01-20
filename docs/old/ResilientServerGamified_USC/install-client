@@ -1,0 +1,10 @@
+#!/bin/bash
+# Make sure to kill old client if any
+sudo pkill -9 curl
+sudo pkill -9 install-client
+while :
+  do
+   number=$[$RANDOM % 10 + 1]
+   curl --retry 0 server/$number.html > /dev/null &
+   sleep 1
+ done

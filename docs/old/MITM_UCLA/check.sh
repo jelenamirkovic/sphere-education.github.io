@@ -1,0 +1,30 @@
+# Two arguments, experiment and project name
+str=$0
+CPATH=${str%/*}
+CPATH="$CPATH/../common"
+echo "Path $CPATH"
+echo "=====> Checking Alice"
+echo "Checking installed programs"
+ssh -o stricthostkeychecking=no alice.$1.$2 "cd $CPATH; /usr/bin/perl check-installed.pl elinks links wget netcat nmap curl telnetd libcgi-pm-perl"
+echo "Checking files"
+ssh -o stricthostkeychecking=no alice.$1.$2 "cd $CPATH; sudo /usr/bin/perl check-files.pl /usr/local/bin/linechoose.pl /usr/lib/cgi-bin/access1.cgi /usr/lib/cgi-bin/access2.cgi"
+echo "Checking processes"
+ssh -o stricthostkeychecking=no alice.$1.$2 "cd $CPATH; /usr/bin/perl check-processes.pl apache2 stockpost.pl"
+echo "=====> Checking Bob"
+echo "Checking installed programs"
+ssh -o stricthostkeychecking=no bob.$1.$2 "cd $CPATH; /usr/bin/perl check-installed.pl elinks links wget netcat nmap curl libcgi-pm-perl"
+echo "Checking files"
+ssh -o stricthostkeychecking=no bob.$1.$2 "cd $CPATH; sudo /usr/bin/perl check-files.pl /usr/local/bin/a1start.sh /usr/local/bin/a2start.sh  /usr/local/bin/telnet.pl  /usr/local/bin/telstart.sh /usr/lib/cgi-bin/stock.* /var/www/html/index.html"
+echo "Checking processes"
+ssh -o stricthostkeychecking=no bob.$1.$2 "cd $CPATH; /usr/bin/perl check-processes.pl telstart.sh a1start.sh a2start.sh"
+echo "=====> Checking Eve"
+echo "Checking installed programs"
+ssh -o stricthostkeychecking=no eve.$1.$2 "cd $CPATH; /usr/bin/perl check-installed.pl curl ettercap tshark hexedit"
+echo "Checking files"
+ssh -o stricthostkeychecking=no eve.$1.$2 "cd $CPATH; sudo /usr/bin/perl check-files.pl /root/remote.ef /usr/bin/chaosreader"
+cmd="curl -s alice.$1.$2/cgi-bin/access1.cgi"
+perl $CPATH/../common/check-output.pl "${cmd}" "END OF LINE"
+cmd="curl -s bob.$1.$2/cgi-bin/stock.cgi"
+perl $CPATH/../common/check-output.pl "${cmd}" "FrobozzCo"
+
+

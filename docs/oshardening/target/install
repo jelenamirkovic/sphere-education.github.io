@@ -1,0 +1,11 @@
+#!/bin/bash
+
+
+debconf-set-selections <<< 'mysql-server-5.7 mysql-server/root_password password zubaz99'
+debconf-set-selections <<< 'mysql-server-5.7 mysql-server/root_password_again password zubaz99'
+sudo DEBIAN_FRONTEND=noninteractive apt-get update -y
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y apache2 mariadb-server php libapache2-mod-php php-mysql telnetd bind9 net-tools sendmail vsftpd
+
+sudo service bind9 start
+
+

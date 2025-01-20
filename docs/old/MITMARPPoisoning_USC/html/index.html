@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="index,nofollow">
+
+<title>MITM ARP Poisoning - USC</title>
+
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all" 
+href="https://www.isi.deterlab.net/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen" 
+href="https://www.isi.deterlab.net/screen.css">
+
+</head><body dir="ltr" lang="en">
+
+<div id="page" dir="ltr" lang="en">
+<h1>MITM ARP Poisoning - USC</h1>
+<div class="author">Created by: David Morgan U.S.C.  davidmor@usc.edu, dmorgan@world.oberlin.edu<br>
+</div>
+
+<div class="due-date">Put your due date here if you are including the exercise in your class.</div>
+
+
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+<li><a href="#reading">Background Reading</a>
+
+<li><a href="#assignment">Assignment Instructions</a>
+<ol>
+<li><a href="#setup">Setup</a>
+<li><a href="#tasks">Tasks</a>
+<ol>
+<li><a href="#manipulating">Manipulating the arp table</a>
+<li><a href="#recording">Recording actual address mappings</a>
+<li><a href="#triggering">Triggering arp activity both implicitly and explicitly</a>
+<li><a href="#manual">Manual IP spoofing with arping</a>
+<li><a href="#ettercap">Arp-spoofing your way into the middle of a traffic stream with ettercap</a>
+<li><a href="#sniffing">Manipulating the traffic stream once you have it - sniffing it</a>
+<li><a href="#altering">Manipulating the traffic stream once you have it - altering it</a>
+</ol>
+<li><a href="#glitches">What Can Go Wrong</a>
+</ol>
+
+<li><a href="#submission">Submission Instructions</a>
+
+</ol>
+</div>
+
+<span class="anchor" id="overview"></span> 
+<h2>Overview</h2>
+
+This exercise crafts a man-in-the-middle attack by using-- without abusing--
+arp. arp is the address resolution protocol. Its design lends itself to the attack. A substantial category of network attacks operate by using protocols per
+design, but for different purposes than motivated the design. To make the
+attack, no attempt to <i>change</i> the protocol
+behavior is needed, only to <i>use</i>  it as-is. This attack, arp spoofing, is in that category. arp is a mechanism designed to let one computer tell another how
+to reach it. The mechanism's workings are inherently suitable for one
+computer to wrongly tell another to reach <i>it</i>, when the other really wants to
+reach some 3rd machine.<p>arp's operation is usually implicit in other network activities, transparent to users. Among other things the arp protocol maintains an
+in-memory table of IP-to-ethernet address mappings derived from its operation. There is a related command that's also named arp. Its focus is the table, and it is a tool whereby maintenance of the arp table can be done manually. Another command of interest is arping. It is
+for explicitly, manually triggering the arp protocol to action, emitting arp packets.
+ettercap is a utility that can use arp to set up a man-in-the-middle attack.<p>This
+exercise demonstrates arp spoofing by surfacing normal arp mechanics to view, then using arp as the central component of a
+man-in-the-middle attack. Students will observe both the normal, implicit operation
+of arp with tshark watching the ping program, and the explicit operation by using the arping utility.
+Then they will manipulate arp with ettercap specifically to jockey one computer
+into position between two others. The others' conversation then flows through
+that computer as a man-in-the-middle. This is without damaging, debasing, or deforming arp
+in any way. Arp itself, turned to deliberate usage, is the attack tool. 
+
+
+<span class="anchor" id="reading"></span> 
+<h2>Background Reading</h2>
+<ul>
+  <li>
+    <p>an <a href="http://www.grc.com/nat/arp.htm">explanation of arp spoofing</a></li>
+  <li>
+  <p>rfc defining <a href="https://tools.ietf.org/html/rfc826">arp protocol</a></li>
+  <li>
+    <p>home page, <a href="http://ettercap.sourceforge.net/">ettercap project</a></li>
+  <li>
+    <p>man pages for <a href="https://linux.die.net/man/8/arp">arp</a>, <a href="https://linux.die.net/man/8/arping">arping</a>,
+    <a href="https://linux.die.net/man/8/ettercap">ettercap</a>, <a href="https://www.wireshark.org/docs/man-pages/tshark.html">tshark</a></li>
+  <li>
+    <p>companion <a href="slides/lab-arpspoof.pdf">slide presentation</a></li>
+</ul>
+
+
+<span class="anchor" id="assignment"></span> 
+<h2>Assignment Instructions</h2>
+
+<span class="anchor" id="setup"></span>
+<div class="level3"><h3>Setup</h3>
+
+
+<p>It is assumed here you already have a DETER account.
+Please log in to DETER and "Begin an Experiment," naming it
+&quot;arpspoof-<i>xxx</i>&quot; (where <i>  xxx</i> is some suffix like your initials likely to be unique to avoid name conflict with other students' experiments) and loading in <tt>/share/education/MITMARPPoisoning_USC/arpspoof.ns</tt> NS file. When you upload the file, click the checkbox "Do Not Swap
+In.&quot; The file produces this internetwork:</p>
+<P align="center"><img border="0" src="images/arpspoof-net.jpg" width="404" height="450">
+<P>&nbsp;
+<P>Examine the file, compare it with the diagram, and note the correspondence.
+This is a 2-subnet internetwork with node0 serving as a router that joins the subnets.
+The main, lower network is:
+<P><b>10.1.1.0 / 255.255.255.248</b>&nbsp; or alternatively&nbsp; <b>10.1.1.0 /
+29</b>
+<P>Swap your new
+experiment in.
+<P>You gain a terminal window interface to any of the nodes by &quot;double ssh,&quot;
+connecting to users.isi.deterlab.net and from there to the node. For example, to
+connect to node1:<P><font size="4" color="#0000FF">ssh&nbsp; &lt;your account name&gt;@users.isi.deterlab.net<br>
+ssh&nbsp; node1.arpspoof-xxx.YourProject.isi.deterlab.net</font>
+
+<p>
+You need to work on 4 of the nodes (node0 excepted). Open a terminal window to each of them-- nodes 1, 2, 3, and 4. Place them in the quadrants of your screen for easy recognition and access. In each, become user "root" and clean up the screen:
+</p>
+
+
+<font size="4" color="#0000FF">
+
+<p>
+sudo su -<br>
+cd <br>
+clear<br>
+
+</font>
+
+<br>
+Here is a brief description of each node's role in this experiment.
+</p>
+
+<p><i><u>node0</u></i> - victim, router<br>
+<br>
+node0 is the router that relays traffic between the two networks. node0 will be one of the victims of man-in-the-middle attacks perpetrated against it and node2 or node3 by node1.
+</p>
+
+<p><u><i>node1</i></u> - attacker<br>
+<br>
+node1 is the ettercap attack platform-- the "man" who will position himself "in the middle" between other nodes (namely 2 and 0). It contains installed copies of ettercap and wireshark. It also holds a script named make-realmappings, to be run before the attack. The script records for reference the real MAC addresses of the various
+LAN machines, in a file. So later, you can identify a wrong MAC when you see it. And it holds an ettercap filter file named laughingskull.filter. Ettercap uses such files in order to do dynamic search-and-replace on webpage content. They tell what to search for and what to replace it with.
+</p>
+
+<p><u><i>node2</i></u> -victim, web server<br>
+<br>
+node2 will be one of the victims of the man-in-the-middle attack perpetrated against it and node0 by node1. It is also a secondary web server. node4 is the main web server. We want the attack to cause dynamic replacement of some of node4's webpage content with foreign content
+sourced from somewhere else. node2 is "somewhere else."
+</p>
+
+<p><i><u>node3</u></i> - victim, web client<br>
+<br>
+node3 will play web client. While browsing a page on web server node4 some content from node2 instead will incorrectly bleed in, due to node1's behind-the-scenes mischief.  But node3 won't know the difference. This happens because node3 will be one of the victims of the man-in-the-middle attack perpetrated against it and node0 by node1.
+</p>
+
+<p><i><u>node4</u></i> - web server, ftp server<br>
+<br>
+node4 will operate as both a remote web and ftp server. http and ftp traffic to and from it will be the subject of the attack.
+The web traffic will be subjected to in-transit alteration, while a password
+passing through within the ftp traffic will get fished out. To provide a password
+trophy for this purpose, please create a user and give him a password. On node4:
+</p>
+
+<p><font size="4" color="#0000FF">
+    useradd joe<br>
+    usermod -s /bin/bash joe <br>
+    sudo mkdir /home/joe <br>
+    sudo chown joe:joe /home/joe<br>
+passwd joe </font>
+&nbsp;&nbsp;&nbsp;&nbsp; (establish a password of your choosing and remember it)<br>
+</p>
+
+
+
+
+</div>
+
+<span class="anchor" id="tasks"></span>
+<div class="level3">
+<h3>Tasks</h3>
+
+<p>Perform the following 7 steps.</p>
+
+<ol type="1">
+<li> <a href="#manipulating">Manipulating the arp table</a>
+<li> <a href="#recording">Recording actual address mappings</a>
+<li> <a href="#triggering">Triggering arp activity both implicitly and explicitly</a>
+<li> <a href="#manual">Manual IP spoofing with arping</a>
+<li> <a href="#ettercap">Arp-spoofing your way into the middle of a traffic stream with ettercap</a>
+<li> <a href="#sniffing">Manipulating the traffic stream once you have it - sniffing it</a>
+<li> <a href="#altering">Manipulating the traffic stream once you have it - altering it</a>
+</ol>
+
+<span class="anchor" id="manipulating"></span>
+<h4>1. Manipulating the arp table</h4>
+<p>Operate on node1. Examine, populate, and depopulate the arp table. To print the arp table:
+<p><font size="4" color="#0000FF">arp&nbsp; -n</font></p>
+<p>The table might be empty, especially if you just started your machine or
+haven't been using it for a little while. It gets populated with machines' address pairs in the course of machine
+interaction. So populating the table calls for a little interaction.
+Pinging&nbsp; nearby machines will do. But you can't ping a machine if you don't
+already know its address. The nmap utility could automatically ping the entire
+range of addresses in your subnet for you. node1's subnet is supposed to be
+10.1.1.0/255.255.255.248. Verify:</p>
+<p><font size="4" color="#0000FF">ifconfig&nbsp; ethx&nbsp; |&nbsp; grep&nbsp;
+&quot;inet addr&quot;</font></p>
+To find the correct interface  run &quot;<a href="images/eth-what.jpg">ifconfig
+-a</a>&quot; and find the one that possesses the address. If you want to do it
+programmatically:</p>
+<p><font size="4" color="#0000FF">ifconfig&nbsp; -a&nbsp; |&nbsp; grep&nbsp; -1&nbsp; 10.1.1&nbsp;
+|&nbsp; grep&nbsp; eth&nbsp; |&nbsp; gawk&nbsp; '{print $1}'</font></p>
+<p>Use the name of
+that NIC interface in these instructions wherever I have used ethx, as in the above
+command for example.)</p>
+<p>The netmask value shown by the command above half-identifies your subnet. Convert it from a dotted
+quad (e.g., 255.255.255.0) into a corresponding CIDR bit count (e.g., 24) using
+the <a href="http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#Prefix_aggregation">rules
+of CIDR</a>. To fully identify your subnet, it remains to determine its network
+address. Note the IP address for your machine, which was also shown. Determine
+your subnet's network address:</p>
+<p><font size="4" color="#0000FF">ipcalc&nbsp; -n&nbsp; &lt;your machine's IP
+address&gt;&nbsp; &lt;the netmask&gt;</font></p>
+<p>Now have nmap ping all the other machines on your subnet (by trying all the
+address in the subnet):</p>
+<p><font size="4" color="#0000FF">nmap&nbsp; -sP&nbsp; -n&nbsp; --send-ip&nbsp; &lt;subnet network
+address&gt;/&lt;CIDR bit count&gt;</font></p>
+<p>When this is done, again view the arp table. It should contain some fresh,
+further enries:</p>
+<p><font size="4" color="#0000FF">arp&nbsp; -n</font></p>
+<p>Now that the table has entries, choose one to manually delete (not an
+&quot;incomplete&quot; one and <i>absolutely not</i> the &quot;192.168&quot;
+one). Note its IP
+address. Delete it:</p>
+<p><font size="4" color="#0000FF">arp&nbsp; -d&nbsp; &lt;IP address&gt;</font></p>
+<p>Re-examine the arp table:</p>
+<p><font size="4" color="#0000FF">arp&nbsp; -n</font></p>
+<p>If you don't delete an entry manually (you hardly ever do), it will disappear
+after a certain timeout period (seconds or minutes by default).</p>
+
+
+<span class="anchor" id="recording"></span>
+<h4>2. Recording actual address mappings</h4>
+
+Address mappings are hard to remember. Spoofing puts false mappings in arp
+tables. To grasp what's going on you'll need to be able to differentiate right
+from wrong mappings on sight. To record the right ones for future reference,
+still on node1, run the
+&quot;make-realmappings&quot; srcript:
+<p><font size="4" color="#0000FF">~/make-realmappings</font></p>
+<p>It deposits the information in file &quot;realmappings.&quot; At any time
+during this exercise, view it as a baseline:</p>
+<p><font size="4" color="#0000FF">cat&nbsp; realmappings</font></p>
+<p>The output should look something like:</p>
+<p><font size="2" face="Times New Roman">[dbmnorth@node1 ~]$ cat realmappings<br>
+10.1.1.1&nbsp;&nbsp;&nbsp;&nbsp; 00:15:17:57:BF:CE<br>
+10.1.1.2&nbsp;&nbsp;&nbsp;&nbsp; 00:15:17:57:C6:BE<br>
+10.1.1.3&nbsp;&nbsp;&nbsp;&nbsp; 00:15:17:57:C7:89<br>
+10.1.1.6&nbsp;&nbsp;&nbsp;&nbsp; 00:15:17:57:C4:38<br>
+[dbmnorth@node1 ~]$</font></p>
+<p>Your ethernet addresses will have different values. They will also change across
+swap-in's because DETER gives
+you different hardware each time.
+
+<span class="anchor" id="triggering"></span>
+<h4>3. Triggering arp activity both implicitly and explicitly</h4>
+
+<p>At this point open a second terminal window to node1. In it run tshark as
+follows:</p>
+<p><font size="4" color="#0000FF">sudo&nbsp; su<br>
+tshark -n -i ethx arp or icmp</font></p>
+<p>arp packets are usually issued by the network stack during operations, when
+needed. They can also be issued by explicit use of the arping command. Identify
+the IP address of a computer on your subnet (e.g., 10.1.1.3). Check your arp table and if that
+computer appears, delete it. Back in the original node1 terminal window:</p>
+<p><font size="4" color="#0000FF">ping&nbsp; -c 1&nbsp; 10.1.1.3</font></p>
+<p>Note the arp actvity in the dump. Did you ask for it? Why was it performed?
+Now again, for the arp table entry of target computer 10.1.1.3, delete it. Now
+in the &quot;command&quot; window:</p>
+<p><font size="4" color="#0000FF">arping&nbsp; -c 1&nbsp; -I&nbsp;
+ethx&nbsp; 10.1.1.3</font></p>
+<p>Note the arp actvity in the dump. Why was it performed? For which of the 2
+commands, ping and arping, was the arp activity incidental and for which was it
+explicit to the command? Leave tshark running in the dump window.</p>
+
+<span class="anchor" id="manual"></span>
+<h4>4. Manual IP spoofing with arping</h4>
+
+arping can compose and send an arp request that represents the machine to
+have an arbitrary (e.g., false) IP address. Choose  an IP address within your subnet that is not in actual use
+  by any computer (e.g., 10.1.1.5). Run
+<p><font size="4" color="#0000FF">
+    /sbin/ifconfig ethx:10 10.1.1.5 up
+  </font><p>
+    This will temporarily assign 10.1.1.5 to ethx as a secondary address on that interface.
+While running
+tcpdump or wireshark in another terminal:</p>
+<p><font size="4" color="#0000FF">arping&nbsp; -c 1&nbsp; -U&nbsp; -I ethx:10&nbsp; 10.1.1.3</font></p>
+<p>Observe the outgoing arp request, and in particular the value in its sender
+IP field (which IP it claims to come from). It would be interesting to view the arp table on target machine
+10.1.1.3, and what impact this command may have had on it. Remotely (and without
+great delay)&nbsp; run the
+command to do so:</p>
+
+<p><font size="4" color="#0000FF">ssh&nbsp;&nbsp; &lt;your account name&gt;@10.1.1.3&nbsp;&nbsp;
+&quot;sudo arp -n"<br>
+cat&nbsp; realmappings</font></p>
+
+<p>Note you are using ssh here as a remote command executor. (That's actually
+ssh's essential but overlooked purpose. Running it the usual way, for a remote command
+session, is really just the special case where the to-be-executed remote command
+happens to be a shell.) The arp table output by the above command <i>is not yours</i>. It is that of the other machine.
+This way, you can view the
+arp tables of linux machines in your subnet on demand without
+having to log in to them. Note his arp table contains a mapping for 10.1.1.5. Is
+that mapping valid or invalid? 
+
+<p>To our deceived machine (10.1.1.3), arping is able to represent
+that the ethernet address of node1 belongs to another IP (10.1.1.5). Once that information is lodged in the deceived
+machine's arp table, that machine will send frames wrongly to arping's machine
+(10.1.1.1) whenever it wishes to reach the other IP (10.1.1.5). <i>Instead of</i> sending to the
+machine that actually holds that IP (if any).&nbsp; That's what &quot;spoofing&quot;
+means. I tell you that I'm Joe. Every time you have something to say to Joe you
+turn to me and say it unaware that I'm not him.</p>
+
+<p>How does arping get away with this injustice? By following the design
+operation of arp. arp intentionally provides that whenever machines get requests
+for their <i>own</i> ethernet-to-IP mapping (i.e., when somebody else arps
+them), they should then and there record in their table the <i>sender's</i>
+mapping. That's always embedded in the incoming arp request. So there are 2 ways
+a machine can get another machine's mapping into its table-- actively by asking
+for it, or passively as side-effect of being asked. When being asked, the
+embedded incoming sender mapping is taken at face value, no questions asked.
+Straight into the arp table it goes. Why?? Because arp is smart. It reasons that
+the requestor is not requesting idly, but because it is about to initiate
+communication which will require responses and so also the sender's mapping.
+It's a sure bet his mapping info will be needed so, now that it's in hand, don't
+discard it but put it in the table immediately for efficiency. So I can
+manipulate your arp table by composing any mapping I want and embedding it as
+the sender mapping into an arp request to you. The arping utility is one tool
+that can do this for you.</p>
+
+<p>In the &quot;dump&quot; window, terminate tshark (ctrl-C).</p>
+
+<span class="anchor" id="ettercap"></span>
+<h4>5. Arp-spoofing your way into the middle of a traffic stream with ettercap</h4>
+
+<p>Ettercap can do the same thing you just did with arping among <i>multiple</i>
+nodes in a net. Just as I could do it among multiple people. I could tell you I'm Joe.
+And I tell Sally I'm you. Now the both of you will turn to me whenever you want to
+talk to each other and say it to me unaware I'm not the other. If I parrot your
+stuff on to her, and hers back to you, neither of you will notice anything out
+of the ordinary. I would become a man in the middle. Optionally, I could record
+all your secrets or insert lies. Ettercap does exactly the
+same thing for ethernet frame conversations.</p>
+<p>Let's insert node 1 in the middle between node2 and node0 then watch 2 and 0 ping each other. You have two node1 terminal windows open. On node1:</p>
+<p><font size="4" color="#0000FF">
+ettercap&nbsp; -i ethx -T&nbsp; -M arp&nbsp;
+/10.1.1.2//&nbsp;&nbsp; /10.1.1.6//</font></p>
+<p>From node1's other terminal window look at the arp tables on both ettercap
+target nodes:</p>
+<p><font size="4" color="#0000FF">ssh&nbsp;&nbsp; &lt;your account name&gt;@10.1.1.2&nbsp;&nbsp;
+&quot;sudo arp -n"<br>
+ssh&nbsp;&nbsp; &lt;your account name&gt;@10.1.1.6&nbsp;&nbsp;
+&quot;sudo arp -n"<br>
+cat&nbsp; realmappings</font></p>
+<p>and compare appearance (in those two nodes' eyes) with reality (in
+realmappings). Nodes 2 and 0 appear to have a certain hardware address. Whose? On node1 (from 2nd terminal window) run tshark:</p>
+<p><font size="4" color="#0000FF"> tshark -c 4 -i ethx icmp</font></p>
+<p>Then concurrently on node2:</p>
+<p><font size="4" color="#0000FF">ping&nbsp; -c 1&nbsp; 10.1.1.6</font></p>
+<p>The above 1-count ping should evoke a single request and corresponding,
+single reply between nodes 2 and 0. The tshark trace shows <i>2 of each</i> in
+terms of their IP addresses. What's going on? IP addresses are <i>unreliable</i>;
+ethernet addresses are <i>fundamental</i>. Find out the real comings and goings
+of these 4 frames by rerunning the tshark command as follows:</p>
+<p><font size="4" color="#0000FF">tshark -c 4 -i ethx -T fields -e eth.src -e eth.dst -E header=yes icmp</font></p>
+<p>Again from node2:</p>
+<p><font size="4" color="#0000FF">ping&nbsp; -c 1&nbsp; 10.1.1.6<br>
+cat&nbsp; realmappings</font></p>
+<p>The trace again shows 4 frames, but in terms of their ethernet addresses this
+time. Study the trace with meticulous attention to the addresses and the nodes
+they belong to. Follow which node each frame comes from and which it goes to. How does
+traffic between node2 and node0 get from node2 to node0?</p>
+
+<span class="anchor" id="sniffing"></span>
+<h4>6. Manipulating the traffic stream once you have it - sniffing it</h4>
+
+<p>When something passes through your hands you have it in your hands. So you
+can handle it. Or not. By default ettercap does not. It just plays innocent
+relay-man much as any router would. But if it decides to intercede, there are
+several ways to do it. One possibility is to dynamically read payloads and sniff
+out targets such as passwords. Let's have node2 log into node4's ftp server
+and have ettercap sniff out the login password.
+</p>
+<p>In the node1 terminal window running ettercap, terminate it with the
+&quot;q&quot; key (note the screen messages). Then run:</p>
+<p><font size="4" color="#0000FF">ettercap&nbsp; -i ethx -T&nbsp; -M arp:remote&nbsp;&nbsp;
+/10.1.1.2//&nbsp;&nbsp; /10.1.1.6//</font></p>
+<p>In the node2 terminal window, while leaving the above node1 window visible on
+the display:&nbsp;</p>
+<p><font size="4" color="#0000FF">ftp 10.1.2.4</font></p>
+<p>and log in as joe with joe's password when prompted. What appears in the
+node1 terminal window where ettercap runs? How? (Terminate the ftp client
+session-- &quot;quit&quot;.)</p>
+
+<span class="anchor" id="altering"></span>
+<h4>7. Manipulating the traffic stream once you have it - altering it</h4>
+
+<p>While the datastream is passing through, another way ettercap can intercede is to actually change it. ettercap can
+apply a dynamic search-and-replace. Let node3 browse the node4 web server's default page,
+but modify it on the way from node4 to node3, in node1.</p>
+<p>Run a web browser on node3. A character mode web browser available on linux
+for such diagnostic purposes in lynx. Use it to browse node4. The default web
+page on node4 is:</p>
+<p><font face="Times New Roman" size="2">&lt;html>&lt;body>&lt;center><br>
+<br>
+&lt;h1>Congratulations!&lt;/h1><br>
+&lt;p>From port 80 here&lt;/p><br>
+&lt;img src=congratulations.jpg><br>
+<br>
+&lt;/center>&lt;/body>&lt;/html></font></p>
+<p>On node3:</p>
+<p><font size="4" color="#0000FF">lynx&nbsp; http://10.1.2.4</font></p>
+<p>It gets the default web page containing its photo of a happy computer &quot;congratulations.jpg.&quot;
+In lynx it looks like this:</p>
+<p align="center"><img border="0" src="images/lynx-unaltered.jpg" width="587" height="300"></p>
+<p>while in a graphical browser it would have this appearance:</p>
+<p align="center"><img border="0" src="images/firefox-unaltered.jpg" width="481" height="304"></p>
+<p>node2 also runs a web server, and makes available a different image. In the node1 terminal window running ettercap, terminate it with the
+&quot;q&quot; key. Then run:</p>
+<p><font size="4" color="#0000FF">
+etterfilter&nbsp;&nbsp; ~/laughingskull.filter&nbsp;&nbsp;&nbsp; -o ~/laughingskull<br>
+</font><font size="4" color="#0000FF">ettercap&nbsp; -i ethx -T&nbsp; -M arp:remote&nbsp;&nbsp;
+/10.1.1.3//&nbsp;&nbsp; /10.1.1.6//&nbsp;&nbsp; -F ~/laughingskull</font></p>
+<p>Ettercap has a filter capability, with a filter language and the &quot;etterfilter&quot;
+compiler for it. Glance at the filter we will use:</p>
+<p><font size="4" color="#0000FF">cat&nbsp;&nbsp; ~/laughingskull.filter</font></p>
+<p>It expresses:</p>
+<p>&nbsp; <b>search for:</b>&nbsp; img src=<br>
+&nbsp; <b>replace with:&nbsp;</b> img src=http://10.1.1.2/laughingskull.gif</p>
+<p>This inserts the appropriate html to make the page fetch our image, foreign
+to the one it's written to fetch. Run the web browser on node3 to browse
+node4 again. On node3:</p>
+<p><font size="4" color="#0000FF">lynx&nbsp; http://10.1.2.4</font></p>
+<p>It gets the default web page containing its photo of a laughing skull &quot;laughingskull.gif.&quot;
+In lynx it looks like this:</p>
+<p align="center"><img border="0" src="images/lynx-altered.jpg" width="587" height="300"></p>
+<p>while in a graphical browser it would have this appearance:</p>
+<p align="center"><img border="0" src="images/firefox-altered.jpg" width="532" height="476"></p>
+<p>Ettercap has caused the client browser's received page to differ from the
+server's sent one. It did it by 1) datastream diversion to/through itself, and
+2) dynamic search and replace on the datastream's in-transit html.</p>
+
+
+
+
+
+</div>
+<span class="anchor" id="glitches"></span>
+
+<div class="level3">
+<h3>What can go wrong</h3>
+screen gets messed up or unresponsive following a command - issue the &quot;reset&quot;
+command (blindly type it even if the screen won't show the echo)
+</div>
+
+
+<span class="anchor" id="submission"></span> 
+<h2>Submission Instructions</h2>
+
+<p>Answer these questions about the above exercise:</p>
+
+1. If node1 is a &quot;man in the middle&quot; then node4 is an &quot;odd man
+out.&quot; In particular, node 4 was unaccounted for in section 2 &quot;Recording actual address mappings.&quot;
+Later you arp poisoned node2 and node0 from node1; how about arp poisoning node
+4 from node1? You accomplish poisoning by sending a crafted arp message to a
+node. Comment on the ways and means of poisoning node4 from node1.
+<p>2. Answer the question at the end of section 5. Under the circumstances of
+that section, &quot;How does
+traffic between node2 and node0 get from node2 to node0?&quot;</p>
+<p>3. Answer the question at the end of section 6, &quot;How?&quot; That is, recall that
+node2 logged into ftp on node4 and somehow node1 figured out the user password
+given by node2. How?</p>
+<p>4. Imagine you run a web hosting company. The manager at one of your clients,
+a medium sized business, calls you in alarm and reports the apparent defacement
+of his website running on your host machine. Images on the site have all been
+replaced with various hacker images like the laughing skull. He heard about it from
+several of his employees, then saw it with his own eyes on their terminals. His
+website has fallen victim to the same mischief as the one on our node4. What is
+your course of action?
+
+</div>
+</body></html>

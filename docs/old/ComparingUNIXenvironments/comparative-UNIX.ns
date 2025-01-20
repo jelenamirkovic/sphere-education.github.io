@@ -1,0 +1,16 @@
+#Content-Disposition: attachment; filename="FileName"
+set ns [new Simulator] 
+source tb_compat.tcl
+
+#Nodes
+set Ubuntu [$ns node]
+tb-set-node-os $Ubuntu Ubuntu-EDU
+
+set FreeBSD [$ns node]
+tb-set-node-os $FreeBSD FBSD-STD
+
+set CentOS [$ns node]
+tb-set-node-os $CentOS CentOS-STD 
+
+$ns rtproto Static 
+$ns run

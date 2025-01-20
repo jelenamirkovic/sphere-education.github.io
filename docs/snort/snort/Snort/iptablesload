@@ -1,0 +1,5 @@
+#!/bin/sh
+iptables -P FORWARD DROP
+iptables -F FORWARD
+iptables -A FORWARD -j NFQUEUE
+exit 0

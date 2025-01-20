@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+apt update -y
+apt install strongswan strongswan-swanctl strongswan-pki libstrongswan-extra-plugins charon-systemd -y

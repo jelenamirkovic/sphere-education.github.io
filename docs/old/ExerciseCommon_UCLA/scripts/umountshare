@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# this script unmounts the installation media for the labs.
+# it does this by creating a self-deleting script under 
+# tmp, named $UC, and executing it
+
+SHARE="/share"
+UC="/tmp/umountshare"
+ERR="/tmp/ums-output"
+
+cd /tmp
+
+echo "#!/bin/bash" > $UC
+echo "sleep 3" >> $UC
+echo "sudo umount $SHARE &> $ERR" >> $UC
+echo "if [ ! -s $ERR ]" >> $UC
+echo "then" >> $UC
+echo "	rm $ERR" >> $UC
+echo "fi" >> $UC
+echo "rm $UC" >> $UC
+
+chmod ugo+rx $UC
+
+$UC &

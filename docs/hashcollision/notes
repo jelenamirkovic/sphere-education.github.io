@@ -1,0 +1,5 @@
+call the node target
+add apt update and -y for install
+install gcc
+do not download zip but install it and refer to /tmp/target/exercise
+explain arguments step output etc.

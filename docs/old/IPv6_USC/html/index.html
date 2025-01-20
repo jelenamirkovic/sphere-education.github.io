@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="index,nofollow">
+
+<title>Ipv6 Internetworking</title>
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all" 
+href="https://www.isi.deterlab.net/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen" 
+href="https://www.isi.deterlab.net/screen.css">
+
+</head><body dir="ltr" lang="en">
+
+<div id="page" dir="ltr" lang="en">
+<h1>Ipv6 Internetworking</h1>
+<div class="author">Created by: Lyndon Pierson.<br>
+</div>
+
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+<li><a href="#assignment">Assignment Instructions</a>
+<ol>
+<li><a href="#setup">Setup</a>
+<li><a href="#tasks">Tasks</a>
+<li><a href="#glitches">Extra credit</a>
+</ol>
+
+<li><a href="#submission">Submission Instructions</a>
+
+</ol>
+</div>
+
+<span class="anchor" id="overview"></span> 
+<h2>Overview</h2>
+<p>Lab exercise incorporating IPv6.</p>
+
+<span class="anchor" id="assignment"></span> 
+<h2>Assignment Instructions</h2>
+
+<span class="anchor" id="setup"></span>
+<div class="level3"><h3>Setup</h3>
+
+<p>1.	On “My Deterlab”, use Experimentation > Begin an Experiment to begin a new testbed experiment.
+<ol>
+<li type='a'>Use NS file: <tt>/share/education/IPv6_USC/synflood.ns</tt></li>
+<li type='a'>Check “Swap In Immediately” or else remember to manually swap in the experiment after it is “created”.  If you have trouble allocating enough nodes, keep trying; this is a busy time of the semester for Deterlab.</li>
+<li type='a'>Make sure to manually swap out your experiment when finished so you will swiftly release the class’ Deterlab resources for others to use.</li>
+<li type='a'>Submit screenshots of major steps below, and explanations of how link-local and how global addresses are formed;  via Canvas.</li>
+<li type='a'>Use the link-local and global addresses from your experiment; they will likely be different from the ones below.</li>
+</ol>
+</p>
+
+</div>
+
+<span class="anchor" id="tasks"></span>
+<div class="level3">
+<h3>Tasks</h3>
+<p>1. Log in and SSH to router, server and client then become root (Note: the attacker node is left over from another exercise that used this NS file.  We will ignore Attacker node for this exercise although it is an additional node that you can log into and further explore IPv6 configuration.)</p>
+
+<p>2. Become root on router, client and server nodes:</p>
+
+<pre>
+sudo su -
+</pre>
+
+<span class="anchor" id="addresses"></span>
+3. Run “ifconfig” on router, client and server nodes to see the Link-Local addresses.
+
+<pre>
+ifconfig
+</pre>
+
+<p>Explain how these link-local addresses were formed. Add screenshots from router, client and server.</p>
+    
+<span class="anchor" id="forwarding"></span>
+4. Ping the router from client and server using the link-local addresses.
+
+<pre>
+ping6 -I ethx -c 1 fe80::/64 (use the addresses from your experiment)
+</pre>
+
+<span class="anchor" id="routes"></span>
+5. Verify that IPv6 kernel is running on the router, client and server nodes.
+
+<pre>
+test -f /proc/net/if_inet6 && echo "Running kernel is IPv6 ready"
+</pre>
+
+<span class="anchor" id="NAT"></span>
+6. Install netplan on router, client and server.
+<p><b>Note:</b> don't confuse with netplan package that is for ...</p>
+<pre>
+apt update
+apt install netplan.io
+</pre>
+    
+<span class="anchor" id="privateIPs"></span> 
+7. Edit /etc/netplan/01-netcfg.yaml file on router, client and server nodes to include script for each interface.
+
+<p><b>Note:</b> remember the router has two interfaces; replace <i>ethx</i> and <i>ethy</i> below with the correct ethernet interfaces from your experiment!</p>
+<p>Router node:</p>
+<pre>
+# This file describes the network interfaces available on your system
+# For more information, see netplan(5).
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ethx:
+      dhcp4: false
+      dhcp6: false
+      addresses:
+          - 5.6.7.2/24
+          - 2001:0db8:0100:f101::250/64
+    ethy:
+      dhcp4: false
+      dhcp6: false
+      addresses:
+          - 1.1.2.2/24
+          - 2001:0db8:0100:f102::250/64
+</pre>
+    
+<p>Client node:</p>
+<pre>
+# This file describes the network interfaces available on your system
+# For more information, see netplan(5).
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ethx:
+      dhcp4: false
+      dhcp6: false
+      gateway6: 2001:0db8:100:f102::2
+      addresses:
+          - 1.1.2.3/24
+          - 2001:0db8:0100:f102::2/64
+</pre>
+    
+<p>Server node:</p>
+<pre>
+# This file describes the network interfaces available on your system
+# For more information, see netplan(5).
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ethx:
+      dhcp4: false
+      dhcp6: false
+      gateway6: 2001:0db8:100:f101::1
+      addresses:
+          - 5.6.7.8/24
+          - 2001:0db8:0100:f101::1/64
+</pre>
+
+<span class="anchor" id="forwarding"></span>
+8. After installing netplan and editing yaml file, apply all settings on router, client and server nodes.
+
+<pre>
+netplan apply
+</pre>
+
+<p>Explain what is the purpose of netplan.</p>
+    
+<span class="anchor" id="forwarding"></span>
+9. Run “ifconfig” on router, client and server to see the Global addresses added.
+
+<pre>
+ifconfig
+</pre>
+
+<p>Explain how these addresses were formed.
+Include screenshots from router, client and server.</p>
+
+<span class="anchor" id="forwarding"></span>
+10. Run ip command from router to see the link-local addresses of client and server.
+
+<pre>
+ip -6 neigh show
+</pre>
+    
+<p>Include screenshots from router, client and server.</p>
+    
+<span class="anchor" id="forwarding"></span>
+11. Verify that IPv6 addresses are configured on router, client and server.
+
+<pre>
+/sbin/ip -6 route show dev ethx
+</pre>
+    
+<span class="anchor" id="forwarding"></span>
+12. Configure your “router” node as a IPv6 router.
+    
+<p>Edit /etc/sysctl.conf and uncomment the line which contains net.ipv6.conf.default.forwarding=1 or add the line if you don't find it. <br>This is a common step to enable IPv6 routing, check <a href="https://wiki.ubuntu.com/IPv6#Configure_your_Ubuntu_box_as_a_IPv6_router">https://wiki.ubuntu.com/IPv6#Configure_your_Ubuntu_box_as_a_IPv6_router</a>.</p>
+    
+<span class="anchor" id="forwarding"></span>
+13. Force Linux to reload the new configuration in /etc/sysctl.conf by executing the following command on router node:
+    
+<pre>
+sysctl -p
+</pre>
+    
+<span class="anchor" id="forwarding"></span>
+14.	Show the IPv6 network route from client and server.
+    
+<pre>
+/sbin/route -A inet6
+</pre>
+    
+<p>Include screenshots from client and server.</p>
+    
+<span class="anchor" id="forwarding"></span>
+15. Ping both interfaces of the router from client and server using the Global addresses.
+    
+<pre>
+ping6 2001:0db8:0100:f101::/64 (use the full global scope address from your experiment)
+</pre>
+    
+    
+<span class="anchor" id="forwarding"></span>
+16. Run Neighbor Discovery from router to see the link-local and global addresses of client and server.
+    
+<pre>
+ip -6 neigh show
+</pre>
+    
+<p>Include screenshot from router.</p>
+    
+</div>
+<span class="anchor" id="glitches"></span>
+
+<div class="level3">
+<h2>Extra credit</h2>
+If you want, you can play with IPv6 “Privacy Extension” addresses – see: <a href="http://tldp.org/HOWTO/html_single/Linux+IPv6-HOWTO/#idp57789440">http://tldp.org/HOWTO/html_single/Linux+IPv6-HOWTO/#idp57789440</a>.
+
+<p>Feel free to explore other things like <a href="https://linux.die.net/man/8/ndisc6">https://linux.die.net/man/8/ndisc6</a>, etc.</p>
+    
+</div>
+
+<span class="anchor" id="submission"></span> 
+<h2>Submission Instructions</h2>
+
+<ol>
+<li>Screenshots from questions 3, 10, 14 and 16.
+<li>Explanations for questions 3, 8 and 9.
+<li>Brief summary of what has to be configured for the client to ping the server using their global addresses.
+</ol>
+
+</div>
+</body></html>

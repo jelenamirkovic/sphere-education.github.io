@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="index,nofollow">
+
+<title>Worm Modeling Exercise - Lehigh</title>
+
+
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all" 
+href="https://www.isi.deterlab.net/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen" 
+href="https://www.isi.deterlab.net/screen.css">
+
+</head><body dir="ltr" lang="en">
+
+<div id="page" dir="ltr" lang="en">
+<h1>Worm Modeling Exercise - Lehigh</h1>
+<div class="author">Created by: Mooi Choo Chuah, Lehigh University, chuah@cse.lehigh.edu.<br>
+</div>
+
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+<li><a href="#reading">Required Reading</a>
+
+<li><a href="#intro">Introduction</a>
+
+
+<li><a href="#assignment">Assignment Instructions</a>
+<ol>
+<li><a href="#setup">Setup</a>
+<li><a href="#tasks">Tasks</a>
+<ol>
+<li><a href="#genlog">Generating and Logging Attacks</a>
+<li><a href="#analysis">Analyzing the log files</a>
+</ol>
+<li><a href="#glitches">What Can Go Wrong</a>
+</ol>
+<li><a href="#submission">Submission Instructions</a>
+
+</ol>
+</div>
+
+<span class="anchor" id="overview"></span> 
+<h2>Overview</h2>
+
+<p>In this exercise, you will reinforce  various important worm related
+concepts you learnt in class:
+</p><ul>
+  <li>how worms spread under different  scanning strategies</li>
+  <li>how worm spreads can be curbed  with different patching strategies</li>
+  <li>modeling methodology that can  be used to predict how fast a worm
+can spread</li>
+  <li>using automatically generated  signature to filter suspicious worm
+ packets</li>
+  <li>how to automatically generate  and retain useful worm signatures</li>
+</ul>
+
+
+<span class="anchor" id="reading"></span> 
+<h2>Required Reading</h2>
+
+<ul>
+  <li><a 
+href="http://en.wikipedia.org/wiki/SQL_slammer_%28computer_worm%29" 
+target="new">Short summary of SlammerWorm attack on Wikipedia</a> 
+  </li><li> <a href="http://en.wikipedia.org/wiki/Witty_worm" 
+target="new">Short summary of WiityWorm attack on Wikipedia</a>
+  </li><li><a href="http://www.tcpdump.org/tcpdump_man.html" 
+target="new">Tcpdump's man 
+  page</a> </li></ul>
+
+
+<span class="anchor" id="intro"></span> 
+<h2>Introduction</h2>
+
+In this exercise, we are going to use the PAWS simulator developed by S.
+ Wei and Dr. J. Mirkovic <a 
+href="http://portal.acm.org/citation.cfm?id=1070162" target="new">[1]</a>
+using the DETER testbed. PAWS is a discrete time packet-level simulator
+which simulates a realistic Internet model and the background traffic
+load, enabling investigation of possible congestion effects and
+sufferings of legitimate traffic during a worm attack. PAWS supports
+various user-customizable parameters that enable testing of different
+worm characteristics, host and network diversity models.
+Before you do this experiment, you should read carefully the reference
+papers <a 
+href="http://www.isi.edu/%7Emirkovic/publications/trident09.pdf" 
+target="new">[2]</a>,
+<a href="http://portal.acm.org/citation.cfm?id=948197" target="new">[3]</a>,<a
+ href="http://cseweb.ucsd.edu/%7Esavage/papers/OSDI04.pdf" target="new">[8]</a>,
+<a 
+href="http://www.cse.lehigh.edu/%7Echuah/publications/paper-ijsn-revised.pdf"
+ target="new">[9]</a>.
+
+
+In this exercise, you will replicate an experiment which was carried out
+ by the authors in <a 
+href="http://portal.acm.org/citation.cfm?id=948197" target="new">[3]</a>
+to evaluate how their proposed host-based dynamic quarantine system can
+help to contain Internet worm propagation. Table 1 lists the original
+experiment settings in
+<a href="http://portal.acm.org/citation.cfm?id=948197" target="new">[3]</a>
+ and the configuration and customization of PAWS used in 
+<a href="http://www.isi.edu/%7Emirkovic/publications/trident09.pdf" 
+target="new">[2]</a> to match the settings in <a 
+href="http://portal.acm.org/citation.cfm?id=948197" target="new">[3]</a>.
+
+
+<p><label for="table1">Table 1: Simulation of Slammer Worm Propagation 
+under Dynamic Quarantine Defense</label>
+<table border="1">
+<tbody><tr>
+<td><b>Original Simulation</b></td>
+<td><b>PAWS simulation</b></td>
+</tr>
+<tr>
+<td>IPV4 address space with 2^32 addresses</td>
+<td>Default Internet Model includes entire IPV4 address space</td>
+</tr>
+<tr>
+<td>Vulnerable population = 75,000</td>
+<td>Vulnerable population = 75,000</td>
+</tr>
+<tr>
+<td>Average scan rate = 4,000/second</td>
+<td>Average scan rate = 4,000/second</td>
+</tr>
+<tr>
+<td>10 hosts are infected initially</td>
+<td>In function determin_vulnerable_host(), randomly mark 10 vulnerable 
+hosts as infected</td>
+</tr>
+<tr>
+<td>Simulation time unit = 0.05 sec</td>
+<td>Simulation time unit = 0.05 sec</td>
+</tr>
+<tr>
+<td>Dynamic quarantine, with quarantine rate = 0.2/sec and quarantine 
+time = 10secs</td>
+<td>In function update_infectee_status(), if an infectee is currently 
+active, mark it as quarantined with a prability of 0.2
+per second. In function update_infectee_status(), if an infectee has 
+been quarantined for 10 seconds, mark it as active.
+In function worm_infectee_scan(), if an infectee is currently 
+quarantined, skip its scanning activity for the current 
+simulation interval</td>
+</tr>
+</tbody></table> 
+
+
+<span class="anchor" id="assignment"></span> 
+<h2>Assignment Instructions</h2>
+
+
+<span class="anchor" id="setup"></span>
+<div class="level3"><h3>Setup</h3>
+
+
+<p> PAWS experiment has been set up on DETER. To start the exercise log on to
+<tt>users.deterlab.net</tt> and copy <tt>/share/education/WormModeling_Lehigh/paws.tgz</tt> into your home directory. Then untar it.  
+The <b>paws.tgz</b> file contains the following files: </p><ul>
+
+    <li><b>ASLinks.dat</b> - a file which contains all the inter-AS links with
+corresponding bandwidth values assigned
+        </li><li><b>BGPAtom2AS.dat</b> - a file which maps BGP atoms to the owner
+ASes.
+        </li><li><b>IPRangeTable.dat</b> - a file which contains all the IP ranges
+with their owner BGP atoms and ASes.
+</li></ul>
+</div>
+
+<span class="anchor" id="tasks"></span>
+<div class="level3">
+<h3>Tasks</h3>
+
+<span class="anchor" id="genlog"></span>
+<div class="level3">
+<h4>Generating and Logging Attacks</h4></a>
+
+Attacks can be generated and logged using the following steps: 
+<ol>
+  </li><li>Log onto <b>node-0</b> using ssh  
+  </li> Check to make sure that <b>/mnt/local</b> has already been mounted by 
+the professor/TA. You should see the file <b>paws_RT.dat</b> file there.
+   <li>In the <b>paws</b> directory (located in your home directory after the previous steps) change the value of PAWS_PORT in <tt>paws.h</tt> to some random number from 1000 to 65535. Then run <tt>make</tt>.
+   </li><li>From the <b>node-0</b> ssh to <b>node-[1-8]</b>, and choose "yes" when asked if public key should be accepted. This step ensures that you can log onto <b>node-[1-8]</b> from <b>node-0</b> 
+without password
+prompts later.
+<li> Run <b>./slammer</b> in the paws directory on <b>node-0</b>. This will run <b> paws_server </b> on node-0 and <b>paws_client</b> on 
+<b>node-[1-8]</b> and create log files <b>log[1-8]</b> in the <b>paws</b> directory. Code may run slowly toward the end.
+  </li><li> Run the script <tt>stop_paws</tt> when you have collected enough traces in the log files. This will kill all the paws related processes
+in each node.
+  </li><li>Do the analysis on the data contained in each log 
+file. 
+  </li><li> Modify <b>client.c</b> in the paws directory to include the quarantine effect and change 
+the log filenames on each machine. Then, recompile and repeat the 
+experiment. Analyze the new log files.
+  </li></ol></div>
+
+<span class="anchor" id="analysis"></span>
+<div class="level3">
+<h4>Analyzing the log files</h4></a>
+
+You need to replicate the Slammer Worm experiment (note that this
+choice can be made in <b>client.c</b> in the <b>paws</b> directory by choosing either
+the <b>#define SLAMMER_WORM</b> or <b>WITTY_WORM</b> line and recompiling using <b>make</b>)
+and plot two curves similar to Figure 1 in <a 
+href="http://www.isi.edu/%7Emirkovic/publications/trident09.pdf" 
+target="new">
+Tools for Worm Experimentation on the DETER Testbed</a>.
+The first plot should show how the number of infected hosts varies with
+time for an original system and a quarantined system. The second plot
+should show how the number of infected hosts and the number of
+quarantined hosts vary with time. In your submitted report, you should
+first describe briefly how Slammer worm spreads in the Internet and
+summarize how the proposed host-based dynamic quarantine system works.
+Then, include your plots and discuss the impacts of varying some of the
+configuration parameters e.g. the quarantine rate.
+
+
+</div>
+</div>
+<span class="anchor" id="glitches"></span>
+
+<div class="level3">
+<h3>What can go wrong</h3>
+
+<ul>
+  <li><b>Experiment cannot be swapped in</b>. First, check the error 
+message you 
+  will receive in the email. One reason may be that there is a 
+lack of 
+  available nodes in DETER and the error message will say so. This 
+happens 
+  ocassionally and usually resources become available in a few hours. If
+ you 
+  tried several times and could not find enough resources or could not 
+diagnose 
+  why the experiment was not swapping in, forward the error message you 
+get from 
+  DETER to your TA or instructor and they will talk to DETER operations team to resolve the problem.
+ 
+
+  <p></p>
+  </li><li><b> Node x Connection Closed</b>. Every student should use a 
+different <b>PAWS_PORT</b> (in <b>paws.h</b>). Change the port number and see if
+  the problem persists. Also, make sure that the instructor has put the 
+<b>paws_RT.dat</b> file on <b>/mnt/local</b> of every machine
+  <p></p>
+  </li><li><b> Segmentation fault</b>. The segmentation fault may be 
+caused by an incomplete <b>paws_RT.dat</b> file. A complete version of that 
+file should be 
+about  645 Mbytes long.
+  <p></p>
+  </li><li><b>All hosts share the same disk</b>. If you try to save 
+trace on different hosts, please don't use the same file name; 
+	otherwise, they will be saved to the same file. Currently, the log files are named as
+<b> log$NODECOUNT.dat </b> in <b> slammer.sh </b>. Before you repeat your experiment for the scenario with quarantine effect, you should edit slammer.sh to
+ensure that different log files are used for the new expt e.g. log_quarantine$NODECOUNT.dat
+
+  <p></p>
+  </li><li>Always <b>rerun make</b> in the <b>paws</b> directory if any <b>.c</b> or <b>.h</b>
+file is modified. 
+
+
+</div>
+
+<span class="anchor" id="submission"></span> 
+<h2>Submission Instructions</h2>
+
+Please submit your report and
+your modified programs (only <b>.c</b> files are required). 
+The
+report should describe how Slammer worm spreads and how the proposed
+host-based dynamic quarantine system works. It should also include your
+plots (see section <a href="#analysis">Analyzing the log files</a> for more details) 
+and your discussions on the impacts of varying some of the
+configured parameters e.g. the quarantine rate.
+The <b>.c</b> files should
+not be included in the report but submitted as separate files. 
+
+</div>
+</body></html>

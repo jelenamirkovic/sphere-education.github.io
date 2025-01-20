@@ -1,0 +1,18 @@
+from mergexp import *
+# create a topology named 'ipsec'
+net = Network('ipsec', addressing==ipv4, routing==static)
+nodes = [net.node(name, image == 'bullseye-edu') for name in [ 'router','moon','alice','sun','bob' ]]
+linklinkNWpublic = net.connect([nodes[0],nodes[1]])
+linklinkNWpublic[nodes[0]].socket.addrs = ip4('2.4.6.9/24')
+linklinkNWpublic[nodes[1]].socket.addrs = ip4('2.4.6.10/24')
+linklinkSWpublic = net.connect([nodes[0],nodes[3]])
+linklinkSWpublic[nodes[0]].socket.addrs = ip4('3.5.7.17/24')
+linklinkSWpublic[nodes[3]].socket.addrs = ip4('3.5.7.18/24')
+lanlanSW = net.connect([nodes[3],nodes[4]])
+lanlanSW[nodes[3]].socket.addrs = ip4('10.0.0.1/24')
+lanlanSW[nodes[4]].socket.addrs = ip4('10.0.0.2/24')
+lanlanNW = net.connect([nodes[1],nodes[2]])
+lanlanNW[nodes[1]].socket.addrs = ip4('172.16.16.1/24')
+lanlanNW[nodes[2]].socket.addrs = ip4('172.16.16.2/24')
+experiment(net)
+

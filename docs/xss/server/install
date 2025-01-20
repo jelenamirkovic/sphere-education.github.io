@@ -1,0 +1,56 @@
+#!/bin/bash
+
+touch /tmp/install.started
+
+ILOG="/tmp/labinstall.log"
+KEEPLOG=1 #keep or delete install log at end of install
+
+touch $ILOG
+chmod 666 $ILOG
+
+export LAB="server"
+export BASE="/tmp"
+export THISLAB="$BASE/$LAB"
+
+export DEBIAN_FRONTEND="noninteractive"
+
+pushd $THISLAB
+
+# Need to specify the root password for mysql-server before hand
+# sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
+# sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
+
+# Required libraries for phantom.js (source: https://gist.github.com/julionc/7476620):
+apt-get update
+apt-get install build-essential chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev -y
+pushd ~
+
+# Installing phantomjs 1.9.7 instead of 1.9.8 because it gives "Unsafe JavaScript attempt to access frame with URL" error.
+wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+sudo tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /usr/local/share/
+sudo ln -sf /usr/local/share/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin
+export OPENSSL_CONF=/etc/ssl
+
+popd
+
+DEBIAN_FRONTEND=noninteractive apt-get install mariadb-server mariadb-client apache2 libcurl3-dev php7.4 php7.4-dev php7.4-http php7.4-mysql php7.4-curl libapache2-mod-php7.4 php7.4-cli -y
+mysql -u root -proot < db.sql
+mysqladmin -u root password root
+systemctl restart apache2
+
+mkdir /lab
+sudo cp -r html/forum/* /var/www/html
+sudo cp -r reset.sh original.sql /lab
+sudo chmod +x /lab/reset.sh
+chown root:www-data /var/www/html/*
+chown root:www-data /var/www/html/images/*
+
+BLUE='\033[1;34m'
+NC='\033[0m' # No Color
+printf "${BLUE}This script is running background tasks for the lab. If this script is running, please begin work on the lab in another terminal tab.${NC}\n"
+
+while true; do
+  for i in $( mysql -u root -proot -e 'select topic_id from topics' forum | grep -e "[0-9]\+" ); do
+    phantomjs access.js $i
+  done
+done

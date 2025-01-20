@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# installer for mitm lab -- alice victim
+
+ILOG="/var/log/labinstall.log"
+
+echo "Starting ALICE installer.." &>> $ILOG
+
+# set up pathnames
+export LAB="alice" # name of this lab
+export SOURCE="ExerciseCommon_UCLA" # common files
+
+export BASE="/tmp" # source root
+export THISLAB="$BASE/$LAB" # lab directory
+export DOWNLOADS="$BASE/$SOURCE"
+
+# support software
+export INSTALL="$DOWNLOADS/scripts"
+
+
+# load the helper functions
+export FUNCTIONS="$INSTALL/functions"
+source $FUNCTIONS
+
+# lock out incoming users during customization
+if [ $DEBUG -eq 0 ] # do this only if "for reals"
+then
+	NoLogin
+fi
+
+# Start of the "victims" script.
+sudo cat $THISLAB/confs/crontab-alice >> /etc/crontab
+
+sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install apache2 elinks links wget netcat nmap curl -y &>> $ILOG
+
+# turn off mod_deflate since it makes ettercap's job tougher
+sudo a2dismod -f deflate
+sudo /etc/init.d/apache2 restart &>> $ILOG
+
+# Students shouldn't be able to log in to alice or bob,
+# so we need to modify the passwd file to restrict access.
+#$INSTALL_UCLA/userchop.sh
+
+#mv /etc/passwd /etc/passwd.orig
+#mv /tmp/passwd /etc/
+#chown root:root /etc/passwd
+#chmod 644 /etc/passwd
+#rm /tmp/passwd
+
+# End of the "victims" script. Start the alice-specific installation:
+
+# cd into the lab directory
+pushd $THISLAB
+
+# get the name of this host
+MYHOST=${HOSTNAME%%.*}
+echo "Installing/starting '$MYHOST' specific software..."
+
+echo "Setting up SSL..."
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y apache2 libcgi-pm-perl elinks links wget netcat nmap curl net-tools
+cp -r $THISLAB/ssl/ /etc/ssl/
+cp $THISLAB/scripts/apache2.conf /etc/apache2/apache2.conf
+a2enmod ssl
+a2enmod cgi
+a2ensite default-ssl
+/etc/init.d/apache2 restart &>> $ILOG
+
+echo "Installing web documents..." &>> $ILOG
+
+echo "Installing/starting movie scripts et al..." &>> $ILOG
+cp -ar $THISLAB/sources /var/
+cp $THISLAB/scripts/linechoose.pl /usr/local/bin/
+chown root:www-data /usr/local/bin/linechoose.pl
+chmod 755 /usr/local/bin/linechoose.pl
+
+mkdir /usr/lib/cgi-bin
+chmod 755 /usr/lib/cgi-bin
+for i in access1.cgi access2.cgi; do
+	cp $THISLAB/scripts/$i /usr/lib/cgi-bin/
+	chown www-data:www-data /usr/lib/cgi-bin/$i
+	chmod 755 /usr/lib/cgi-bin/$i
+done;
+
+# install telnetd
+DEBIAN_FRONTEND=noninteractive apt-get install telnetd -y &>> $ILOG
+
+echo "Adding users..." &>> $ILOG
+useradd jimbo  &>> $ILOG
+echo "jimbo:goofy76" | chpasswd  &>> $ILOG
+useradd jambo &>> $ILOG
+echo "jambo:minnie77" | chpasswd &>> $ILOG
+useradd jumbo &>> $ILOG
+echo "jumbo:donald78" | chpasswd &>> $ILOG
+
+# install stock posting script
+killall stockpost.pl
+cp $THISLAB/scripts/stockpost.pl /usr/local/bin/
+chown root:root /usr/local/bin/stockpost.pl
+chmod 755 /usr/local/bin/stockpost.pl
+
+# start stock posting script
+pushd /
+/usr/local/bin/stockpost.pl &> /dev/null &
+
+# share/proj are unmounted in parent script
+echo "Leaving alice-specific installer..."  &>> $ILOG

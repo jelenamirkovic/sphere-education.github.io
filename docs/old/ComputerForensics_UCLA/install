@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# now uses Debian ONLY -- 8/22/12 -- pahp
+
+DEBUG=0 # set to 1 to DISABLE lockout and share-unmounting for testing
+KEEPLOG=0 # keep or delete install log
+
+echo "Begin node customization."
+echo "Starting 'install'" > /tmp/install.stamp
+
+
+# set up pathnames
+export LAB="ComputerForensics_UCLA" # name of this lab
+export SOURCE="ExerciseCommon_UCLA" # common files
+
+export BASE="/share/education" # source root
+export THISLAB="$BASE/$LAB" # lab directory
+export DOWNLOADS="$BASE/$SOURCE"
+
+# support software
+export INSTALL_UCLA="$DOWNLOADS/scripts"
+
+# cd into the lab directory
+pushd $THISLAB
+
+echo "$LAB"
+echo "$SOURCE"
+echo "$BASE"
+echo "$THISLAB"
+echo "$DOWNLOADS"
+echo "$INSTALL_UCLA"
+
+# load the helper functions
+export FUNCTIONS="$INSTALL_UCLA/functions"
+
+echo "$FUNCTIONS"
+pwd
+
+source $FUNCTIONS
+
+# lock out incoming users during customization
+if [ $DEBUG -eq 0 ] # do this only if "for reals"
+then
+        NoLogin
+fi
+
+echo
+echo ">>> Beginning additional configuration of node for '$LAB' lab."
+echo 
+
+# set up loadimage.sh and the /images directory
+mkdir -p  /images/sda1 /images/sda2 /images/recovered
+cp -r $THISLAB/utilities/* /images/
+cp scripts/loadimage.sh /images/
+chmod ug+rwx /images/loadimage.sh
+
+cp images/fdisk.ul /images/
+
+# zonk is a special script that allows editing a file on an image
+# without modifying it's timestamp. It's used for admins fixing 
+# images not created with our tool.
+cp scripts/zonk /usr/bin/
+chmod 755 /usr/bin/zonk
+
+# stop ntpd...
+sudo /etc/init.d/ntp stop
+# PERMANENTLY!
+find /etc/rc?.d | grep ntp | xargs rm $1
+sudo rm /usr/sbin/ntp*
+
+# change date to reflect when images were taken -- the images are
+# now old and some students pointed this out as a mistake. The 
+# easiest solution is to change the time on the server.
+sudo date -s "9/15/2007 10:44:35"
+
+# make sure date is reset on reboot
+echo "@reboot root /bin/date -s \"9/15/2007 10:44:35\"" >> /etc/crontab
+
+# install stuff
+sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install curl john hexedit john e2fsprogs e2fslibs-dev -y
+cp -r $THISLAB/e2undel /usr/local/src
+cd /usr/local/src/e2undel; make; cp e2undel /usr/bin
+
+
+echo "Success! Creating success stamp."
+CreateStamp
+
+echo ">>> Configuration complete."
+YesLogin
+
+
+# unmount source files
+if [ $DEBUG -eq 0 ] # do this only if "for reals"
+then
+	$INSTALL/umountshare &
+fi
+
+if [ $KEEPLOG -eq 0 ]
+then
+	rm $ILOG
+	rm /tmp/labinstall.log
+fi
+

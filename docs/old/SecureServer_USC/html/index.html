@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- saved from url=(0076)https://www.isi.deterlab.net/file.php?file=/share/shared/ResilientserverCCTF -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+
+
+<meta name="robots" content="index,nofollow">
+
+<title>CCTF: Secure Server - USC/ISI</title>
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all" href="https://education.deterlab.net/stylesheets/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen" href="https://education.deterlab.net/stylesheets/screen.css">
+
+</head><body dir="ltr" lang="en" data-pinterest-extension-installed="cr1.39.1">
+<hr>
+<div id="page" dir="ltr" lang="en">
+<h1>CCTF: Secure Server - USC/ISI</h1>
+<div class="author">Created by: Jelena Mirkovic, USC/ISI, sunshine@isi.edu
+
+</div>
+
+<table class="new">
+<tbody><tr class="new">
+<td class="new">
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+</li><li><a href="#blue">Blue Team Tasks</a>
+</li><li><a href="#red">Red Team Tasks</a>
+</li><li><a href="#scoring">Scoring</a>
+</li><li><a href="#dynamics">Exercise Dynamics</a>
+</li><li><a href="#grading">Grading</a>
+</li><li><a href="#links">Useful Links</a>
+</li></ol>
+</div>
+
+
+
+<span class="anchor" id="overview"></span> 
+<h2>Overview</h2>
+<p>This exercise lets students practice setting up and monitoring a Web and DNS server. Students will be divided into teams. Each team will play the defender role (Blue team) for their own system and the attacker role (Red team) for another team's system. 
+
+</p><p>This exercise uses the topology from <tt>/share/education/SecureServer_USC/cctf.ns</tt>. Team 1 will defend blueserver and bluegateway in their experiment. They will also have access to redserver and redgateway in experiment of team 2, and they will launch attacks on blueserver and bluegateway in team 2's experiment. Similarly team 2 protects blueserver and bluegateway in their experiment and attacks team 3's experiment. And so on.
+
+    
+</p><p><img src="topo.jpg">
+
+<span class="anchor" id="blue"></span> 
+</p><h2>Blue Team Tasks</h2>
+
+<p>This team will control the entire <tt>blue</tt> network, whose address range is 1.0.0.0/8. The team's goal is to develop several applications so that they function as specified, and to secure them and the network against intrusions. The applications to be supported are: a Web server with a banking application, a DB server to support the banking application, and a DNS server. The team should also locate and close any unnecessary applications that may be used as a backdoor. I will open a few backdoors at the competition stage and you will need to find them and close them. 
+
+<h3>Web server with a banking application</h3>
+
+The team is free to install any Web server they like. The easiest one is probably Apache. The team should then develop a banking application, which works like this:
+
+<UL>
+<LI>It is a publicly accessible application
+<LI>When the page <FONT COLOR=blue>www.blue.net/register.php?user=A&pass=B</FONT> is accessed, the system creates a new account for user A with pass B in the system. 
+<LI>When the page <FONT COLOR=blue>www.blue.net/login.php?user=A&pass=B</FONT> is accessed, the system validates the user login and serves the user a cookie. 
+<LI>When the page <FONT COLOR=blue>www.blue.net/manage.php?action=C&amount=D</FONT> is accessed, the system performs action C with amount D. Below are the possible combinations of action and amount:
+<OL><LI>action=deposit, amount=D - add amount D to the user's account and display balance
+<LI>action=withdraw, amount=D - withdraw amount D from the user's account if there are sufficient funds and display balance
+<LI>action=balance, no amount variable specified - print out balance from the user's account
+<LI>action=close, no amount variable specified - close out the user's account
+</OL>
+<LI>When the page <FONT COLOR=blue>www.blue.net/logout.php</FONT> is accessed, the user is logged out and the cookie invalidated.
+</UL>
+Balance should be displayed in the following format "balance=VALUE". You may put any other information on the Web page returned to the user.
+
+<h3>DNS server</h3>
+Anyone should be able to query the DNS server residing on the bluegateway about the names in <FONT COLOR=blue>blue.net</FONT>. 
+
+Blue network will receive legitimate user requests from a machine in the red network (2.0.0.0/8). They will also receive attack traffic from the red network. An IP in the red network can be legitimate, attack or both. Red team and my scoring program can create IP addresses in the red network on the fly. My scoring program will further create only legitimate IPs - red team will not be allowed to use these for attacks. The goal of the blue team is to serve all requests coming from legitimate IPs and to either serve or drop requests coming from the attack IPs. 
+
+</p><p></p><div class="warning">
+Make sure you understand how <tt>iptables</tt> command works before you use it as you may cut off your access to a given machine in DeterLab if you filter out some specific traffic to/from it, e.g., all outgoing traffic. The only way to recover from this is to reboot the machine using Web portal for DeterLab. Click on your Experiment, then click on the machine's name in the Node List (e.g., pc133) and then choose "Reboot node" from the top left menu. It usually takes 5-10 minutes for the machine to come up again. 
+</div>
+
+</p><h3>Assumptions and Requirements</h3>
+
+<p>You can borrow code from online sources but you need to understand what it does and how.
+
+</p><h3>Suggested division of work</h3>
+It may make sense to divide work by server so that 2-3 people work on one server's development/configuration. Monitoring should also be done on servers to ensure that all accesses are logged, and processed correctly. Additionally, 2-3 people should work on monitoring the traffic on the bluegateway, detecting and responding to attacks. You can have one person
+work on finding and closing backdoors. Once you close a backdoor, make sure that it is really closed. Also, make sure
+you don't close a service that a DeterLab node needs. If you do, you may cut yourself off the network. You will then
+need to reswap the experiment and try again. DeterLab services are: SSH, inetd, emulab-syncd, pubsubd and ntpd. 
+
+</p><h3>Suggested strategies</h3>
+<UL>
+  <li>You may find this guide useful on <A href="https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-an-authoritative-only-dns-server-on-ubuntu-14-04">how to set up DNS server</A>
+<LI>You may want to limit the ability of attackers to scan your network.
+<LI>Make sure to handle SQL injection attacks and to set up folder access conservatively.
+<LI>Some legitimate users may create weak passwords. You should accept every password. You should ensure however
+  that your teammates and you have strong passwords.
+<LI>You can set up HTTPS if you like and let me know and I will adjust my legitimate client script to use it.
+</UL>
+
+
+<span class="anchor" id="red"></span> 
+<h2>Red Team Tasks</h2>
+
+This team will control the entire <TT>red</TT> network. I will choose some IPs from this network's range (2.0.0.0/8) to host my legitimate clients and the rest can be used for attacks. The goal of the red team is to gain access to blue team's network and interfere with its operation. This can be done by: (1) performing SQL injection, (2) making the banking application behave in a way that is not expected (e.g., being able to withdraw money from a legitimate user's account), (3) finding and exploiting a backdoor, (4) cracking/stealing passwords of the opposing team. 
+
+<P>You can set up a custom IP on redserver like this:
+<tt>sudo ifconfig ethX:Y 2.1.2.1 up</tt>
+replace X with the actual interface number for 2.2.2.5 address on redeserver. Replace Y with a number. Start with 1 and go up with each new address.
+
+<P>You can use this new address in wget or curl by doing this:
+<tt>wget --bind-address=2.1.2.1 URL</tt>
+or
+<tt>curl --interface 2.1.2.1 URL</tt>
+
+
+</p><h3>Assumptions and Requirements</h3>
+<p>You can borrow code from online sources but you need to understand what it does and how. Attacks that overwhelm the blue team's network are out of scope (e.g., DDoS) but anything that targets servers and the bluegateway is in scope. Also, doing "sudo su sunshine" on your experimental machine and then logging into Blue team's machines is out of scope.
+
+</p><h3>Suggested division of work</h3>
+It may make sense to divide work by attack technique so that 2-3 people work on different scanning approaches, 2-3 work on SQL injections, 2-3 work on password cracking, 2-3 work on sniffing and scanning for backdoors, etc. 
+
+</p><h3>Suggested strategies</h3>
+<UL><LI>Attacking IPs do not have to attack all the time. Mixing up some legitimate traffic with attack would be good to hide the nature of the IPs.
+<LI>User passwords/cookies could be sniffed from the net
+<LI>It may be possible to leverage an existing vulnerability in OS or applications if you find it.
+<li>Look for backdoors. If they are not closed, you will be able to open a reverse shell into the blue server.
+<li>You can do some hacker training at <a href="http://www.overthewire.org">http://www.overthewire.org</a>
+  </ul>
+
+<span class="anchor" id="scoring"></span> 
+<h2>Scoring</h2>
+
+The Blue Team receives a point for each legitimate client's request
+that the server processes and responds to correctly. Red Team gets
+the point otherwise. 
+
+<span class="anchor" id="dynamics"></span> 
+<h2>Exercise Dynamics</h2>
+
+Teams will need to simultaneously act as Blue Team and Red Team
+throughout the exercise. We will then have 
+a post-mortem discussion and selection of a winning team.
+
+<span class="anchor" id="grading"></span> 
+<h2>Grading</h2>
+
+Each team member will be graded based on their contribution to the
+team effort, not based on the team's performance. After the exercise
+each team member will submit a report containing the list of
+contributions they made to the team effort - e.g., modules that they
+coded, testing and setup they performed, etc. All team members must
+sign each report. Reports will be delivered to the instructor in class.
+The grades will be assigned based on the report.
+
+
+<span class="anchor" id="links"></span> 
+<h2>Useful Links</h2>
+
+You can use any programming language you like for any part of your assignment. 
+Use Google to discover how to set up your servers to be as secure as possible. 
+
+</td>
+</tr></tbody></table>
+<br>
+<br>
+
+
+</div>
+</body></html>

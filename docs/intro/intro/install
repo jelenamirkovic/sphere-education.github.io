@@ -1,0 +1,62 @@
+#!/bin/bash
+
+
+# installer for intro lab
+
+DEBUG=0 # don't lockout, don't umount /share
+KEEPLOGS=0
+ILOG="/tmp/labinstall.log"
+
+
+# set up pathnames
+export SOURCE="ExerciseCommon_UCLA" # common files
+export DOWNLOADS="$SOURCE" 
+
+# support software 
+export INSTALL="$DOWNLOADS/scripts"
+
+# load the helper functions
+export FUNCTIONS="$INSTALL/functions"
+source $FUNCTIONS
+
+
+if [ $DEBUG -eq 0 ] # do this only if "for reals"
+then
+	NoLogin
+fi
+
+echo
+echo ">>> Beginning additional configuration of node for '$LAB' lab." >> $ILOG 2>&1
+echo 
+
+# install intro lab treasure hunt files
+mkdir /tmp/sources 
+
+cp sources.tar.bz2 /tmp/sources 
+tar xjf /tmp/sources/sources.tar.bz2 -C /tmp/sources/
+
+cp /tmp/sources/posters/*INTRO-1* /usr/share/pixmaps/ 
+cp /tmp/sources/posters/*intro-2* /dev/  
+cp /tmp/sources/posters/*intro-3* /var/log/ 
+cp /tmp/sources/posters/*intro-4* /etc/  
+mkdir /.hidden  
+cp /tmp/sources/posters/*Intro-5* /.hidden/ 
+
+# cleanup files
+rm -rf /tmp/sources
+
+apt update
+apt install mlocate less nano alpine-pico ed joe emacs elinks -y
+
+
+# allow logins
+echo ">>> Configuration complete." >> $ILOG 2>&1
+YesLogin
+
+# remove install files
+rm -rf *
+
+if [[ $KEEPLOGS -eq 0 ]]
+then
+	rm $ILOG
+fi

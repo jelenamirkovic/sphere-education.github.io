@@ -1,0 +1,14 @@
+#!/bin/bash
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y net-tools
+awk 'BEGIN {print "nameserver 10.1.2.2" } {print}' /etc/resolv.conf > file
+mv file /etc/resolv.conf
+
+## Script for setting hostname
+# Get the current hostname
+new_hostname=$(hostname)
+
+# Replace the old hostname with the new one in /etc/hosts
+sudo sed -i "s/127.0.1.1\tdebian/127.0.1.1\t$new_hostname/" /etc/hosts
+echo "Hostname in /etc/hosts updated to $new_hostname"

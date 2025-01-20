@@ -1,0 +1,29 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+#Create the topology nodes
+
+foreach node {client cache auth attacker} {
+        set $node [$ns node]
+	tb-set-node-os $node Ubuntu-EDU
+}
+
+tb-set-node-startcmd $auth "sudo /share/education/DNS_MITM_ColoState/setup-auth"
+tb-set-node-startcmd $client "sudo /share/education/DNS_MITM_ColoState/setup-client"
+tb-set-node-startcmd $cache "sudo /share/education/DNS_MITM_ColoState/setup-cache"
+tb-set-node-startcmd $attacker "sudo /share/education/DNS_MITM_ColoState/setup-attacker"
+
+
+#Create the topology links
+set linkClC [$ns duplex-link $client $cache 100Mb 3ms DropTail]
+set lan0 [$ns make-lan "$cache $auth $attacker " 100Mb 0ms]
+
+#set ip's now that links are defined
+tb-set-ip-link $cache $linkClC 10.1.1.3
+tb-set-ip-lan $cache $lan0 10.1.2.2
+tb-set-ip-link $client $linkClC 10.1.1.2
+tb-set-ip-lan $attacker $lan0 10.1.2.4
+tb-set-ip-lan $auth $lan0 10.1.2.3
+
+$ns rtproto Static
+$ns run

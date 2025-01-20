@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# edit files without changing atime or mtime.
+# this still changes ctime but that can't be reasonably helped.
+
+EDITWITH="vi"
+BACKUP="/tmp/$1.bak"
+
+if [ "$@" ];
+then
+	cp --preserve=all "$1" "$BACKUP"
+	$EDITWITH "$@"
+	touch -r "$BACKUP" "$1"
+	shred -u -z "$BACKUP"
+	shred -u -z "$1~"
+else
+	echo "Please edit an existing file."
+fi
+

@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc
+END
+BUGS
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/BUGS
+END
+CONTRIB
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/CONTRIB
+END
+DESIGN_NOTES
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/DESIGN_NOTES
+END
+PACKET_BUILDING
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/PACKET_BUILDING
+END
+TODO
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/TODO
+END
+CHANGELOG
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/CHANGELOG
+END
+COPYING
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/COPYING
+END
+MIGRATION
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/MIGRATION
+END
+PORTED
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/PORTED
+END
+RAWSOCKET_NON_SEQUITUR
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/RAWSOCKET_NON_SEQUITUR
+END
+libnet.doxygen.conf
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/235/othersource/libnet-1.1.2.1/doc/libnet.doxygen.conf
+END

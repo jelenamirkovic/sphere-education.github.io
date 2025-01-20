@@ -1,0 +1,18 @@
+sudo apt-get update
+sudo apt-get autoremove -y
+echo "Installing python"
+sudo apt-get install python-dev -y
+echo "Installing libldns"
+sudo apt-get install libldns-dev -y
+echo "Installing python bindings for lib ldns"
+sudo apt-get install python-ldns -y
+echo "Installing flex"
+sudo apt-get install flex -y
+echo "Installing numpy"
+sudo apt-get install python-numpy -y
+cp -r /share/education/ResilientServerGamified_USC/gameon/flow_stats flow_stats
+curdir=`pwd`
+cd flow_stats/libtrace-3.0.22; sudo ./configure; sudo make; sudo make install; cd $curdir
+cd flow_stats/python-libtrace-1.6; sudo make install-py2; sudo make install; cd $curdir
+cd flow_stats/ipaddress-master;sudo python setup.py install; cd $curdir
+cd flow_stats/bitarray-0.8.1; sudo python setup.py install

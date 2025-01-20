@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# now Debian-only -- 8/22/12 -- pahp
+
+
+DEBUG=0 # set to 1 to DISABLE lockout and share-unmounting for testing
+KEEPLOG=0 # keep or delete install log
+
+ILOG="/var/log/labinstall.log"
+touch $ILOG
+chmod 666 $ILOG
+
+echo "Starting 'install'" > $ILOG
+
+# installer for exploits lab
+export LAB="bufferoverflow"
+export BASE="/tmp"
+export SOURCE="ExerciseCommon_UCLA"
+
+export THISLAB="$BASE/$LAB" # lab directory
+export DOWNLOADS="$BASE/$LAB/$SOURCE" # repos
+
+# support software
+export INSTALL="$DOWNLOADS/scripts" 
+
+# cd into the lab directory
+pushd $THISLAB
+
+# load the helper functions
+export FUNCTIONS="$INSTALL/functions"
+source $FUNCTIONS
+
+# lock out incoming users during customization
+if [ $DEBUG -eq 0 ] # do this only if "for reals"
+then
+	NoLogin
+fi
+
+echo ">>> Beginning additional configuration of node for '$LAB' lab." >> $ILOG
+
+echo "installing software"
+
+####################################
+# install the relevant debian packages
+####################################
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install elinks links wget curl tcpdump -y
+
+####################################
+# installing make and gcc
+####################################
+apt-get install make
+apt-get install -y gcc
+
+####################################
+# fhttpd installation
+####################################
+echo "Installing fhttpd" >> $ILOG
+
+echo "disable ASLR and make it permanent..." &>> $ILOG
+echo 0 > /proc/sys/kernel/randomize_va_space
+echo "kernel.randomize_va_space = 0" >> /etc/sysctl.conf
+
+echo "Copying source to /usr/src..." &>> $ILOG
+cp -r $THISLAB/fhttpd /usr/src/ &>> $ILOG
+echo "Compiling code..." &>> $ILOG
+pushd /usr/src/fhttpd
+make &>> $ILOG
+popd
+
+
+####################################
+# sundry scripts available in /root
+####################################
+echo "Installing submission materials..."
+if ! cp -ar $THISLAB/root /
+then
+	echo "Couldn't install scripts in /root" >> $ILOG
+else
+	chmod 755 /root/*.sh
+fi
+
+
+echo "Success! Creating success stamp."
+CreateStamp
+
+echo ">>> Configuration complete."
+YesLogin
+
+# unmount source files
+rm -rf *
+
+if [ $KEEPLOG -eq 0 ]
+then
+	rm $ILOG
+	rm /tmp/labinstall.log
+fi
+

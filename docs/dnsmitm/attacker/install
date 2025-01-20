@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install debhelper cmake bison flex libgtk2.0-dev libltdl3-dev libncurses-dev libncurses5-dev libnet1-dev libpcap-dev libpcre3-dev libssl-dev libcurl4-openssl-dev ghostscript ettercap-text-only tshark net-tools -y
+

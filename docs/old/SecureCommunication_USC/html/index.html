@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="index,nofollow">
+
+<title>CCTF: Secure Communication - USC/ISI</title>
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all"
+      href="https://www.isi.deterlab.net/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen"
+      href="https://www.isi.deterlab.net/screen.css">
+
+</head><body dir="ltr" lang="en">
+
+<div id="page" dir="ltr" lang="en">
+<hr>
+<h1>CCTF: Secure Communication - USC/ISI</h1>
+<div class="author">Created by: Jelena Mirkovic, USC/ISI, sunshine@isi.edu
+
+</div>
+
+<table class="new">
+<tr class="new">
+<td class="new">
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+<li><a href="#blue">Blue Team Tasks</a>
+<li><a href="#red">Red Team Tasks</a>
+<li><a href="#scoring">Scoring</a>
+<li><a href="#dynamics">Exercise Dynamics</a>
+<li><a href="#grading">Grading</a>
+<li><a href="#links">Useful Links</a>
+</ol>
+</div>
+
+
+<span class="anchor" id="overview"></span> 
+<h2>Overview</h2>
+<P>This exercise lets students practice their understanding of encryption, decryption and attacks on cryptographic protocols. Students will be divided into 3-4 person teams. Each team will play the defender role (Blue team) for their own system and the attacker role (Red team) for another team's system. 
+
+<P>Each network in the exercise will consist of three machines - a <tt>server</tt> and a <tt>client</tt> machine under the control of the Blue Team and a <tt>mitm</tt> machine, sitting on the path from the client to the server, under the control of the Red Team. The image below shows a sample network in DETERLab.
+
+<P><IMG SRC="ctf1.png">
+
+<span class="anchor" id="blue"></span> 
+<h2>Blue Team Tasks</h2>
+
+<P>Develop a client and a server in DETERLab that talk between themselves using custom encryption/decryption. In the exercise you will be tasked to use one of the following crypto schemes:
+<UL>
+<LI>Monoalphabetic cipher
+<LI>Polyalphabetic cipher - your teacher will specify the number of maps during the exercise
+<LI>Homophonic cipher
+<LI>Polygram cipher - your teacher will specify the length of the block during the exercise
+</UL>
+Since your team does not know which cipher it will be asked to use you will need to develop and test each one before the exercise. You can choose the key length and the key itself. Choose wisely. You will store the keys on the client and the server machines prior to the exercise, i.e., you are not doing online key exchange. You also cannot distribute new keys during the exercise but you can program your client and server to switch to a new key you have stored on them prior to the exercise. This switch needs to happen automatically, i.e. without human intervention.
+
+<h3>Assumptions and Requirements</h3>
+<P>Assume that you are encrypting messages byte by byte.
+
+<P>You MUST write all the code yourself. You are not allowed to use crypto libraries in the OS nor to copy code from online sources, but you can read the code from online sources and use the ideas from it to write your own code.
+
+<P>You can assume that your messages will be in spoken English. They will be up to 100 characters long and will have only lower case letters, punctuation marks (.,!? no quotes) and spaces. The teacher will supply the messages to each team at the beginning of the exercise.
+
+<P>There will be total of 10 unique messages to send, and they can be repeated multiple times during the exercise. 
+
+<P>The client reads messages from a file, supplied by the teacher and sends a message to the server once per minute. The message file contains one message per line. The file will contain enough message lines for the duration of the exercise (e.g., 60 lines for 60 minute exercise). 
+
+<P>The client prepends each message by a sequence number, before sending it to the server. You can choose how the sequence number changes and whether it is encrypted or not.
+
+<P>The server prints each received message to a file called <tt>messages.txt</tt> upon receipt.
+
+<P>You MUST encrypt each message using the same approach, i.e. you cannot change crypto scheme on the fly, unless it is broken by the Red Team and you are fixing vulnerabilities. You can change the encryption key any time, but the change must be automated, i.e. it needs to happen at a given time, or upon sending a given number of messages, or upon some other trigger, and must not involve any human intervention.
+
+<h3>Milestones</h3>
+<P>Here are some milestones that your team must reach BEFORE the exercise. 
+<OL>
+<LI>Write two simple client and server programs. The client should read messages from a file and send them to the server at the rate of 1 per minute. The server should recieve these and store to a file. Once you verify that this is working correctly on DETERLab (you must verify it there, not on your local machine) modify the client to prepend a sequence number to each message.
+<LI>Implement a monoalphabetic cipher.
+<LI>Extend the monoalphabetic cipher code to implement a polyalphabetic cipher. Make the number of maps a variable that can be entered as command line argument.
+<LI>Extend the monoalphabetic cipher code to implement a homophonic cipher.
+<LI>Implement a polygram cipher. Make the block size a variable that can be entered as command line argument.
+<LI>For each of the ciphers you are implementing ensure that you can encrypt and decrypt properly, i.e. that you can retrieve original messages at the server side.
+<LI>Integrate your ciphers with the client and the server.
+</OL>
+Tasks 1,2 and 5 can be done in parallel. Tasks 3 and 4 can also be done in parallel, and have to occur after task 2. Tasks 6 and 7 have to occur in the end.
+
+<span class="anchor" id="red"></span> 
+<h2>Red Team Tasks</h2>
+
+The goal of the Red Team is to break encryption and obtain secret
+messages and/or decryption key. Since you don't know which crypto
+scheme the Blue Team will be using you need to develop analysis
+approaches for each listed scheme. 
+
+<h3>Assumptions and Requirements</h3>
+<P>You MUST write all the code yourself. You are not allowed to use
+crypto libraries in the OS nor to copy code from online sources, but
+you can read the code from online sources and use the ideas from it to
+write your own code.
+
+<P>You can assume that your router (<tt>mitm</tt> node) sits in between the client and the
+server. You can observe message exchanges but you are not allowed to
+perform any man-in-the-middle attacks, except sniffing the traffic.
+
+<P>You must be able to read and analyze binary code, i.e., you must be able to work with non-printable characters.
+
+<h3>Milestones</h3>
+<P>Here are some milestones that your team must reach BEFORE the exercise. 
+<OL>
+<LI>Intercept messages between client and server and print their content into a file. Print bytes of message as decimal numbers, not as characters.
+<LI>Implement a cracking code for monoalphabetic cipher.
+<LI>Implement a cracking code for polyalphabetic cipher. Assume that the number of maps will be given as a command line argument.
+<LI>Implement a cracking code for homophonic cipher.
+<LI>Implement a cracking code for polygram cipher. Assume that the block size will be given as a command line argument.
+<LI>Link the cracking code with the interception code. Translate the final message into printable characters and store into a file. DON'T FORGET to store the sequence number as well.
+</OL>
+Tasks 1, 2, 3, 4 and 5 can be done in parallel. Tasks 6 has to occur in the end.
+
+<span class="anchor" id="scoring"></span> 
+<H2>Scoring</H2>
+
+The Blue Team receives a point for each message they send to the
+server that is not broken by the Red Team. The Red Team receives a
+point for each message they break. The Red Team proves that it broke
+the message by printing it into a file. We can then compare this file
+with the server's output file. These two files need to include sequence numbers
+along with the message content.
+
+<span class="anchor" id="dynamics"></span> 
+<H2>Exercise Dynamics</H2>
+
+Teams will need to simultaneously act as Blue Team and Red Team
+throughout the 2h exercise. We will then have a 10 min break followed
+by a post-mortem discussion and selection of a winning team.
+
+<span class="anchor" id="grading"></span> 
+<H2>Grading</H2>
+
+Each team member will be graded based on their contribution to the
+team effort, not based on the team's performance. After the exercise
+each team member will submit a report containing the list of
+contributions they made to the team effort - e.g., modules that they
+coded, testing and setup they performed, etc. All team members must
+sign each report. Reports will be delivered to the instructor in class
+on <insert date here>.
+ The grades will be assigned based on the report.
+
+<span class="anchor" id="links"></span> 
+<H2>Useful Links</H2>
+
+You can use any programming language you like for any part of your assignment. 
+
+<UL>
+<LI>The Blue Team needs to write client and server code. If you have never written
+a client or a server <A href="http://www.kellbot.com/2010/02/tutorial-writing-a-tcp-server-in-python/">this link</a> shows how to do this quickly in Python.
+
+<LI>The Red Team will need to capture messages as they go through the
+router. <A
+HREF="http://blog.yancomm.net/2011/05/nfqueue-packet-mangling-with-python.html">This
+page </A> tells you how to use <tt>netfilter</tt> and <tt>iptables</tt> to do that. 
+<P><div class="warning">
+Note that the example there affects OUTPUT queue on the machine. In your exercise you will need to work on the FORWARD queue. Make sure you understand how <tt>iptables</tt> command works before you use it as you may cut off your access to a given machine in DeterLab if you filter out some specific traffic to/from it, e.g., all outgoing traffic. The only way to recover from this is to reboot the machine using Web portal for DeterLab. Click on your Experiment, then click on the machine's name in the Node List (e.g., pc133) and then choose "Reboot node" from the top left menu. It usually takes 5-10 minutes for the machine to come up again. 
+</div>
+
+<P>You
+are allowed to use these libraries but you need to write your own code to
+mimic what the code on that Web page does. The callback function can
+be your encryption-breaking function or you can just write messages to
+a file and break encryption offline.
+
+<LI>The Blue Team may produce some non-printable code during encryption
+<A
+HREF="http://www.doughellmann.com/PyMOTW/struct/">This page</A> talks
+about packing binary values into a string and unpacking them. In case
+that Blue Team produces some non-printable characters in encrypted
+messages the Red Team must be prepared to deal with them.
+</ul>
+</td><td class="new" valign="top"><img width="200" src="intel-sponsor.jpg"></td></tr></table>
+</div>
+<hr>
+Questions & Comments: Prof. Mirkovic at USC-ISI (sunshine at isi.edu)
+<br>
+<br>
+<center><a href="http://www.isi.edu"><img src="isi_logotype.png"></a></center>
+<br>
+<center><a href="http://viterbi.usc.edu"><img src="usc_viterbi_logotype.jpg"></a></center>
+
+</body></html>

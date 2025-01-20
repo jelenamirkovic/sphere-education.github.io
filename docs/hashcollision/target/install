@@ -1,0 +1,2 @@
+apt update -y
+apt install python3-matplotlib gcc

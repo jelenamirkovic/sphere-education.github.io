@@ -1,0 +1,8 @@
+
+Disk /dev/sda: 18.2 GB, 18210037760 bytes
+255 heads, 63 sectors/track, 2213 cylinders, total 35566480 sectors
+Units = sectors of 1 * 512 = 512 bytes
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1              63     2923829     1461883+  83  Linux
+/dev/sda2         2923830     3903794      489982+  82  Linux swap / Solaris

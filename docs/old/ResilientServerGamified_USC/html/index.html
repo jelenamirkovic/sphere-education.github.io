@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- saved from url=(0042)http://ccss.usc.edu/430/spring14/ctf2.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+
+<meta name="robots" content="index,nofollow">
+
+<title>CCTF: Resilient Server - USC/ISI</title>
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all" 
+href="https://www.isi.deterlab.net/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen" 
+href="https://www.isi.deterlab.net/screen.css">
+
+</head><body dir="ltr" lang="en">
+<hr>
+<div id="page" dir="ltr" lang="en">
+<h1>CCTF: Resilient Server - USC/ISI</h1>
+<div class="author">Created by: Jelena Mirkovic, USC/ISI, sunshine@isi.edu
+
+</div>
+
+<table class="new">
+<tbody><tr class="new">
+<td class="new">
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+</li><li><a href="#blue">Blue Team Tasks</a>
+</li><li><a href="#red">Red Team Tasks</a>
+</li><li><a href="#scoring">Scoring</a>
+</li><li><a href="#dynamics">Exercise Dynamics</a>
+</li><li><a href="#grading">Grading</a>
+</li><li><a href="#links">Useful Links</a>
+</li></ol>
+</div>
+
+
+
+<span class="anchor" id="overview"></span> 
+<h2>Overview</h2>
+<p>This exercise lets students practice monitoring network for
+denial-of-service attacks and devising appropriate actions. Students will be divided into 3-4 person teams. Each team will play the defender role (Blue team) for their own system and the attacker role (Red team) for another team's system. 
+
+</p><p>Each network in the exercise will consist of six machines - a <tt>server</tt> and a <tt>gateway</tt> machine under the control of the Blue Team, three <tt>client</tt> machines under the control of the Red Team and a <tt>router</tt> machine that neither team controls. Links between clients and the <tt>router</tt> and the link between the <tt>gateway</tt> and the <tt>server</tt>  are 100 Mbps. The link between the <tt>gateway</tt> and the <tt>router</tt> is 1 Gbps. This allows the clients to attempt to create DoS conditions by flooding the link between the <tt>gateway</tt> and the <tt>server</tt>. The network for the exercise is shown below and the NS file for it resides at <tt>/share/education/ResilientServerGamified_USC/cctf.ns</tt>.
+
+</p><p><img src="ctf2.png">
+
+<span class="anchor" id="blue"></span> 
+</p><h2>Blue Team Tasks</h2>
+
+<p>This team will control the <tt>server</tt> and the <tt>gateway</tt>
+machine, connected by 100 Mbps link. The <tt>server</tt> is a 
+classical LAMP server, and it is seeded by 10 static Web pages.
+
+<p></p><p>The Blue team should develop a monitoring program for the
+<tt>gateway</tt> machine and for the <tt>server</tt> so that they can
+quickly spot if the Red team launches denial-of-service and so that
+they can defend from it. One way to defend from it is to implement
+some filtering at the <tt>gateway</tt> machine via <tt>iptables</tt>. Blue
+team should be ready to implement filtering on the fly but they should
+develop a sophisticated monitoring program that helps them quickly
+figure out what to filter. The Blue team can also modify Apache's
+configuration and code to make the server more resilient to some
+attacks, or they can craft packets to end connections that behave
+suspiciously (e.g., TCP RST).
+
+</t></p><p></p><div class="warning">
+Make sure you understand how <tt>iptables</tt> command works before you use it as you may cut off your access to a given machine in DeterLab if you filter out some specific traffic to/from it, e.g., all outgoing traffic. The only way to recover from this is to reboot the machine using Web portal for DeterLab. Click on your Experiment, then click on the machine's name in the Node List (e.g., pc133) and then choose "Reboot node" from the top left menu. It usually takes 5-10 minutes for the machine to come up again. 
+</div>
+
+
+<p>The goal of the Blue team is to keep the server up and
+running. When the server gets attacked, the Blue team should strive to
+bring it back up quickly (if it is down) and to install filters to get
+rid of attack traffic. 
+
+</p><p>When developing and practicing swap in an experiment using <tt>/share/education/ResilientServerGamified_USC/cctf.ns</tt> file, and then run on <tt>users</tt> machine:
+<PRE>
+perl /share/education/ResilientServerGamified_USC/start.pl expName projName
+</PRE> This will lead to the identical setup as the one during CTF exercise.
+
+</p><h3>Assumptions and Requirements</h3>
+
+<p>You can borrow code from online sources but you need to understand what it does and how.
+
+</p><h3>Milestones</h3>
+<p>Here are some milestones that your team must reach BEFORE the exercise. 
+</p><ol>
+<li> <b>(one week)</b> Develop monitogring at the <tt>server</tt> that will let you
+automatically check the content of HTTP requests you are getting and
+who is sending them.
+</li><li> <b>(one week)</b> Develop monitoring software on the <tt>gateway</tt> machine
+that will let you automatically check if <tt>server</tt> is getting slow.
+</li><li> <b>(one week)</b> Extend your monitoring software so you can automatically get statistics on number of packets and bytes sent to the server in TCP data, TCP SYN, UDP and ICMP and Total categories so you can diagnose various DDoS attacks. Make sure the software monitors the correct interface.
+</li><li> <b>(two weeks)</b> Extend your monitoring software so you can detect number of packets and bytes sent to the server by each client IP. Make sure the software monitors the correct interface.
+</li><li> <b>(one-two weeks)</b> Learn how you would write rules for <tt>iptables</tt> to filter traffic with some characteristics, e.g., by protocol, sender IP, length, TCP flags, etc. You may need to write those rules manually during the exercise but make sure you have tried to write them while preparing for the exercise and that they work correctly. You can check correctness by generating attack traffic with some signature (e.g., packet length, sender IP, protocol, etc.), writing a rule to filter it and checking that that traffic is dropped. You can check for drops in two ways. First, you could run your monitoring software on the interface leading to the <tt>server</tt>. Second, you could use an option with <tt>iptables</tt> that lets you see counts of times a rule was matched. It may be advisable to try both methods for measuring correctness as the first measures what goes to the server and the second shows you that the rule was activated by attack traffic.
+</li></ol>
+Tasks 1 and 2 can be done in parallel, tasks 3 and 4 should be done
+after 1 and 2. Task 5 can be done in parallel with all this. 
+
+<span class="anchor" id="red"></span> 
+<h2>Red Team Tasks</h2>
+
+The Red Team will have control over two out of the three client machines. Red Team can discover which client machines are available to host an attack by trying to log into each machine. The third machine is a legitimate client.
+Attack machines can act as legitimate machines some times and attack other times. Automated client software runs on all client machines. 
+This sofware runs automatically to generate at most 1 request per second for one out of 10 static Web pages at the <tt>server</tt> node.
+
+<p>The goal of the Red Team is to make the server unable to serve its
+legitimate client, either
+through compromise or through denial of service. 
+Any attack is allowed, not just denial of service, 
+even breaking Blue team's passwords.
+
+</p><p>When developing and practicing swap in an experiment using <tt>/share/education/ResilientServerGamified_USC/cctf.ns</tt> file, and then run on <tt>users</tt> machine:
+<PRE>
+perl /share/education/ResilientServerGamified_USC/start.pl expName projName
+</PRE> This will lead to the identical setup as the one during CTF exercise.
+You can also use Deterlab's Flooder tool, which will be automatically installed on attack machines (type <tt>flooder</tt> to activate it), to send attack traffic. For more information about this tool see <A HREF="http://www.isi.edu/~mirkovic/tapia/flooder.html">man page</A>.
+
+</p><h3>Assumptions and Requirements</h3>
+<p>You can borrow code from online sources but you need to understand what it does and how.
+  
+</p><h3>Milestones</h3>
+<p>Here are some milestones that your team must reach BEFORE the exercise. 
+</p><ol>
+<li> <b>(one week)</b> Develop attacks that may crash the <tt>server</tt> because
+they require it to process too many requests or because requests are
+malformed. This may or may not be possible but give it a try.
+</li><li> <b>(one week)</b> Develop attacks that flood the link between the
+<tt>gateway</tt> and the <tt>server</tt>. It may be advisable to use
+raw sockets here to craft packets. It may also be advisable to
+parameterize attack software so that you can easily change spoofing
+technique, if any, packet type, packet length, etc. You can use Flooder tool for this purpose.
+</li><li> <b>(one week)</b> Develop attacks that flood the link or the server with too many
+HTTP requests.
+</li><li> <b>(two weeks)</b> Develop attacks that use slow HTTP flood.
+</li><li> <b>(one-two weeks)</b> Test ALL your attacks and make sure they do work against your
+server implementation. Then iterate between trying to handle those that work against your server and trying to craft new attacks that will bring that even more hardened server down.
+</li></ol>
+Tasks 1, 2, 3 and 4 can be done in parallel and task 5 should be done
+in the end.
+
+<span class="anchor" id="scoring"></span> 
+<h2>Scoring</h2>
+
+The Blue Team receives a point for each legitimate client's request
+that the server processes and responds to within 500 ms. Red Team gets
+the point otherwise. 
+
+<span class="anchor" id="dynamics"></span> 
+<h2>Exercise Dynamics</h2>
+
+Teams will need to simultaneously act as Blue Team and Red Team
+throughout the exercise. We will then have a post-mortem discussion and selection of a winning team.
+
+<span class="anchor" id="grading"></span> 
+<h2>Grading</h2>
+
+Each team member will be graded based on their contribution to the
+team effort, not based on the team's performance. After the exercise
+each team member will submit a report containing the list of
+contributions they made to the team effort - e.g., modules that they
+coded, testing and setup they performed, etc. All team members must
+sign each report. Reports will be delivered to the instructor in class.
+The grades will be assigned based on the report.
+
+
+<span class="anchor" id="links"></span> 
+<h2>Useful Links</h2>
+
+You can use any programming language you like for any part of your assignment. 
+
+<ol>
+<li>You can also use <tt>netcat</tt> to send packets in a DDoS attack. To install do apt-get install <tt>netcat</tt>. Also see <a href="http://www.r3v0.net/docs/Delta/man/nc.html">netcat manual</a>
+</li><li>You can use <tt>tcpdump</tt> to record network traffic. You can develop your own scripts to analyze it.
+</li><li>You can look at Web server logs at <tt>/var/log/apache2</tt>
+</li></ol>
+
+
+</td>
+</tr></tbody></table>
+<br>
+<br>
+
+
+</div></body></html>

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sudo cp directory.php /etc/httpd/cgi-bin/
+sudo chmod 755 /etc/httpd/cgi-bin/directory.php
+

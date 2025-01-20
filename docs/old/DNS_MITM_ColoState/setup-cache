@@ -1,0 +1,8 @@
+#!/bin/bash
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y bind9 dnsutils bind9-doc
+cp /share/education/DNS_MITM_ColoState/resolv.conf.cache /etc/resolv.conf
+cp /share/education/DNS_MITM_ColoState/named.conf.options.cache /etc/bind/named.conf.options
+/etc/init.d/bind9 restart
+

@@ -1,0 +1,18 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+zone "google.com" {
+             type master;
+             file "/etc/bind/google.com";
+        };
+
+zone "2.1.10.in-addr.arpa" {
+        type master;
+        notify no;
+        file "/etc/bind/10";
+};

@@ -1,0 +1,15 @@
+make sure to do apt update
+no ipsec-tools, instead strongswan
+
+https://docs.strongswan.org/docs/5.9/config/quickstart.html
+
+on sun and moon
+apt install strongswan strongswan-swanctl strongswan-pki libstrongswan-extra-plugins charon-systemd
+
+on router
+install net-tools
+
+https://docs.strongswan.org/docs/5.9/pki/pkiQuickstart.html
+
+add /usr/bin/ and /sbin to path to get to swanctl
+

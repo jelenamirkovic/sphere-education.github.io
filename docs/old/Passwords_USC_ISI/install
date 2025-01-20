@@ -1,0 +1,2 @@
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y john
+sudo cp /share/education/Passwords_USC_ISI/passwords /var/passwords

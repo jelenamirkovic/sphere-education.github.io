@@ -1,0 +1,31 @@
+#!/bin/bash
+
+touch /tmp/install.started
+
+ILOG="/tmp/labinstall.log"
+KEEPLOG=1 #keep or delete install log at end of install
+
+touch $ILOG
+chmod 666 $ilog
+
+export LAB="UMD_XSS"
+export BASE="/share/education"
+
+export THISLAB="$BASE/$LAB"
+
+pushd $THISLAB
+
+apt-get update
+
+# Need to specify the root password for mysql-server before hand
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
+sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
+apt-get install mysql-server apache2 libcurl3-dev php5 php5-dev php-http php5-mysql libapache2-mod-php5 php5-cli phantomjs -y
+mysql -u root -proot < db.sql
+
+sudo cp -r $THISLAB/html/forum /var/www/html
+chown root:www-data /var/www/html/forum/*
+chown root:www-data /var/www/html/forum/images/*
+
+for i in $( mysql -u root -proot -e 'select topic_id from topics' forum | grep -e "[0-9]\+" ); do
+  

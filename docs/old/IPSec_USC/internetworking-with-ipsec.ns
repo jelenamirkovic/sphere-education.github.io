@@ -1,0 +1,42 @@
+#Content-Disposition: attachment; filename="FileName"
+set ns [new Simulator]
+source tb_compat.tcl
+
+#Nodes
+set NWrouter [$ns node]
+tb-set-node-os $NWrouter Ubuntu1804-STD
+
+set NWworkstation1 [$ns node]
+tb-set-node-os $NWworkstation1 Ubuntu1804-STD
+
+set SWrouter [$ns node]
+tb-set-node-os $SWrouter Ubuntu1804-STD
+
+set SWworkstation1 [$ns node]
+tb-set-node-os $SWworkstation1 Ubuntu1804-STD
+
+set ISrouter [$ns node]
+tb-set-node-os $ISrouter Ubuntu1804-STD
+
+
+#Lans
+set lanNW [$ns make-lan "NWrouter NWworkstation1" 100000.0kb 0.0ms]
+set lanSW [$ns make-lan "SWrouter SWworkstation1" 100000.0kb 0.0ms]
+
+# Links
+set linkNWpublic [$ns duplex-link NWrouter ISrouter 100000.0kb 0.0ms DropTail]
+set linkSWpublic [$ns duplex-link SWrouter ISrouter 100000.0kb 0.0ms DropTail]
+
+tb-set-ip-lan $NWworkstation1 $lanNW 172.16.16.2
+tb-set-ip-lan $NWrouter $lanNW 172.16.16.1
+
+tb-set-ip-lan $SWrouter $lanSW 10.0.0.1
+tb-set-ip-lan $SWworkstation1 $lanSW 10.0.0.2
+
+tb-set-ip-interface $NWrouter $ISrouter 2.4.6.10
+tb-set-ip-interface $ISrouter $NWrouter 2.4.6.9
+tb-set-ip-interface $ISrouter $SWrouter 3.5.7.17
+tb-set-ip-interface $SWrouter $ISrouter 3.5.7.18
+
+$ns rtproto Static
+$ns run

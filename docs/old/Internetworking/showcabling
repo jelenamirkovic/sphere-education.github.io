@@ -1,0 +1,16 @@
+#!/usr/local/bin/bash
+echo
+
+if [ $# != 2 ]
+then
+	echo "Usage: showcabling <experiment name> <project name>";echo
+	exit
+fi
+
+cabling=""
+for node in SWworkstation1 SWrouter ISrouter NWrouter NWworkstation1
+do
+    out=`ssh -o StrictHostKeyChecking=no $node.$1.$2 "cat /tmp/nicaddressing.dat"`
+    cabling="$cabling $node $out"
+done
+echo $cabling | perl /share/shared/Internetworking/showcabling.pl

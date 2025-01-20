@@ -1,0 +1,2 @@
+cd /tmp/analysis; cp * /home/`cat user`/; cd /home/`cat user`/
+pip3 install -i https://pypi.org/project/ pyelftools

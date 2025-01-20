@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# adaptation of nicaddressing, which prints a table of interfaces that have IPs, like:
+#
+#               eth1    66.159.240.70
+#               eth2    192.168.2.1
+#
+# This goes a step beyond, removing those IPs and put the interfaces "down" instead of just printing out.
+
+PATH=$PATH:/sbin
+
+host=`hostname | awk -F'.' '{print $1}'`
+
+if hostname | grep swworkstation1 &> /dev/null; then
+	# install apache2 if it's absent
+	if ! dpkg -s apache2 | grep "Status: install ok installed" &> /dev/null; then
+		sudo apt-get  -y install  apache2 &> /dev/null
+	fi
+fi
+
+if hostname | grep nwworkstation1 &> /dev/null; then
+	# install lynx if it's absent
+	echo "NW"
+	if ! dpkg -s lynx | grep "Status: install ok installed" &> /dev/null; then
+		sudo apt-get  -y install  lynx &> /dev/null
+	fi
+fi
+
+
+
+
+# put utility script that identifies NIC names in the PATH
+sudo cp  /tmp/$host/nicaddressing /usr/local/bin/
+
+# do the deaddressing
+/usr/local/bin/nicaddressing > /tmp/nicaddressing.dat

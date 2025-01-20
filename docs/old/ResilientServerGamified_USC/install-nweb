@@ -1,0 +1,13 @@
+#!/bin/bash
+if [ ! -d /usr/local/src/nweb ] ; then
+    mkdir /usr/local/src/nweb
+fi
+cp -r /share/education/ResilientServerGamified_USC/nweb /usr/local/src/
+cd /usr/local/src/nweb; cc -O2 nweb.c -o nweb
+if [ ! -d /var/www ] ; then
+    mkdir /var/www
+fi
+echo "This works" > /var/www/index.html
+chmod a+rx /var/www/*
+cd /usr/local/src/nweb; sudo ./nweb 80 /var/www &
+echo "Done" > /var/www/index.html
