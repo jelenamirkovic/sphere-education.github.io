@@ -191,9 +191,8 @@ Attacks can be generated and logged using the following steps (remember to use <
 <li>In the <tt>/tmp/node-0/paws</tt> directory run <tt>make</tt>. 
   </li><li>Log onto <tt>node-1</tt> 
 <li>In the <tt>/tmp/node-1/paws</tt> directory run <tt>make</tt>. Then run:
-<pre>scp yourusername@users.deterlab.net:/share/education/WormModeling_Lehigh/paws_RT.dat.gz .
+<pre>curl https://steel.isi.edu/paws_RT.dat.gz -o paws_RT.dat.gz
 </pre>
-Make sure to replace yourusername with your actual username on DeterLab.
 Then run <tt>gunzip paws_RT.dat.gz</tt>.
 <li>In <tt>paws</tt> folder,  run <tt> paws_server > log</tt> on <tt>node-0</tt> and <tt>paws_client > log</tt> on <tt>node-1</tt>. Code may run slowly toward the end and it may take about 2h to finish.
   </li><li>Do the analysis on the data contained in each log file. 
