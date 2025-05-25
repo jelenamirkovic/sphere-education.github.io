@@ -60,7 +60,7 @@ href="../../css//screen.css">
 <span class="anchor" id="overview" /> 
 <h2>Overview</h2>
 
-<p>This exercise demonstrates how Snort and similar inline intrusion detection / prevention systems can be used to help secure legacy software by walking them through an environment that includes an extremely insecure application.</p>
+<p>This exercise demonstrates how Snort (version 2) and similar inline intrusion detection / prevention systems can be used to help secure legacy software by walking them through an environment that includes an extremely insecure application.</p>
 <p>Depending on their skill level students will be asked to analyze network the network traffic produced by this program, to write Snort rules to protect against known attacks against this program and to create a sample attack against this program which they will be asked to guard against.</p>
 
 <span class="anchor" id="reading" /> 
@@ -69,7 +69,7 @@ href="../../css//screen.css">
 <p>The following information may be useful in completing this exercise.</p>
 <ul>
 <li><a href="http://en.wikipedia.org/wiki/Snort_(software)" target="new">Short summary of Snort on Wikipedia</a>
-</li><li>SYN flood attacks in the <a href="https://www.snort.org/#documents" target="new">The Snort Manual</a>
+</li><li><a href="http://manual-snort-org.s3-website-us-east-1.amazonaws.com/" target="new">The Snort Manual</a>
 </li><li>A guide to creating <a href="http://www.sans.org/reading_room/whitepapers/tools/developing-snort-dynamic-preprocessor_32874" target="new">Snort Preprocessors</a>
 </li></ul>
 
@@ -78,9 +78,12 @@ href="../../css//screen.css">
 <h2>Introduction</h2>
 
 <p>When working in the field of network security it is not always possible to ensure the security of legacy applications.  Many businesses and organizations use systems that are known to be highly insecure and will continue to do so for the foreseeable future as it would not be cost effective to replace or modify these programs.  As such the best we can do to improve the security of these systems is to place them behind filters that can be controlled.</p>
-<p>In this exercise you will be using Snort to help secure a highly insecure application without modifying the application itself.  This application functions as a simple password protected file server for plain text documents, and it is up to you to use Snort to help protect this information.</p>
+<p>In this exercise you will be using Snort (version 2) to help secure a highly insecure application without modifying the application itself.  This application functions as a simple password protected file server for plain text documents, and it is up to you to use Snort to help protect this information.</p>
 <p>This network is broken into three chunks.  The first chunk contains the work environment which houses the legacy server along with a single client machine.  This network is protected by the Snort router, which is set not to permit any traffic through at at the start of this exercise.  The second network contains a single outsider machine.  Finally,
- the third contains two client computers.  All of these networks are connected to each other using a single router.</p>
+  the third contains two client computers.  All of these networks are connected to each other using a single router.</p>
+
+<p><b>Note: In this exercise you will use Snort version 2. There is now Snort version 3, with very different architecture and rule format.</b></p>
+
 <span class="anchor" id="assignment" /> 
 <h2>Assignment Instructions</h2>
 
@@ -100,13 +103,13 @@ href="../../css//screen.css">
 <span class="anchor" id="norules" />
 <h3>Start Snort Without Rules</h3>
 <ol>
-  <li>Connect to the <tt>snort</tt> node and modify <tt>/etc/snort/snort.debian.conf</tt> to set the DEBIAN_SNORT_HOME_NET to 100.1.10.0/24. Then type:
+  <li>Connect to the <tt>snort</tt> node and modify <tt>/etc/snort/snort.conf</tt> to set the DEBIAN_SNORT_HOME_NET to 100.1.10.0/24. Then type:
     <pre>
       sudo snort --daq nfq -Q -v
     </pre>
   <li>On <tt>client1</tt> node type:
         <pre>
-      ftp bob
+      ftp server
       ...enter "anonymous" as username
       ...enter any string as password
       get ducky.xml
@@ -120,7 +123,7 @@ href="../../css//screen.css">
 
   <p><b>Questions:</b>
 	<ol>
-		<li>What happens to the traffic to client1 when Snort is not running?
+		<li>What happens to the traffic to client1 when Snort is running without any rules? 
 		</li><li>Is this a good thing?
 	        </li><li>Can you reconstruct contents of ducky.xml on <tt>router</tt> node?
 		</li><li>Based on Snort's output what can you say about the application?  What port does it connect to?
@@ -193,7 +196,7 @@ Add the following snort rule that prevents .xml files from being sent out,
 <div class="level3">
 <h2>What can go wrong</h2>
 <ul>
-</li><li><b>Nodes Cannot Communicate with Server</b> If the server or route cannot communicate with each other when Snort running, make sure that the routing table is correct.  You can check the routing table with the command "route" on both of the computers.  
+</li><li><b>Nodes Cannot Communicate with Server</b> If the server or route cannot communicate with each other when Snort running, make sure that the routing table is correct.  You can check the routing table with the command "route" on both of the computers. Also make sure that Snort is running. Without Snort, all traffic will be trapped in the forwarding queue and it will not reach its destination.
 </li></ul>
 
 </div>
