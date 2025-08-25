@@ -69,7 +69,7 @@ If you don't have an account, follow the instructions <a href="https://mergetb.g
   <p>Follow steps 1-5 from <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/classes/#working-on-assignments">class use guidelines</a> to set up your account on SPHERE. These steps operate on your experiment development container (XDC), which serves as a gateway into your experiment.
 
    <h4>Running the lab</h4>
-    <p>Execute steps 7 and 8 using <font color=red>twonode</font> as your labname. Step 7 creates the experiment, allocates nodes and sets up virtual machines on them. Step 8 installs necessary applications on the experiment nodes. Wait about 20 seconds between steps 7 and 8 to make sure that nodes have been fully set up, before the applications are installed.
+    <p>Execute step 8 using <font color=red>twonode</font> as your labname. It creates the experiment, allocates nodes and sets up virtual machines on them. Then it installs necessary applications on the experiment nodes. 
 
     <p>This experiment sets up the topology shown below:
       <p>
@@ -156,7 +156,6 @@ iperf -c a > iperf.out
 
 	<li><b>Copy a file from your XDC to your machine.</b> On <b>your XDC</b> (Jupyter Terminal window) type:
 	<pre>
-	  su - yourusername
 	  echo "Hello world" > hw.out
 	</pre>
 
@@ -188,7 +187,7 @@ iperf -c a > iperf.out
 	Log into <b>your XDC</b> and check that you can see <tt>lftt.out</tt>.
 	</ol>
 <h4>Stopping the Experiment</h4>
-      <p>Find a terminal window you want to use. It can be a new window, obtained by following steps 3, 4 and 6 from <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/classes/#working-on-assignments">class use guidelines</a>. Or it can be a window where you logged into <tt>a</tt> or <tt>b</tt> -- type <tt>exit</tt> to return to your XDC. Type:
+      <p>Find a terminal window you want to use. It can be a new window, obtained by following steps 3-6 from <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/classes/#working-on-assignments">class use guidelines</a>. Or it can be a window where you logged into <tt>a</tt> or <tt>b</tt> -- type <tt>exit</tt> to return to your XDC. Type:
 
 	<pre>
 stopexp twonode
