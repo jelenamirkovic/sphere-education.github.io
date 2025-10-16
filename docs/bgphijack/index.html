@@ -275,7 +275,7 @@ network 10.1.1.0/24
 end
 exit
 </pre>
-You will also need to insert a fake route into <tt>attacker</tt> node, or BGP will refuse to advertise the route you hijacked. Using <tt>ifconfig</tt> discover the interface that has the 10.6.1.2 IP address, e.g., <tt>ethX</tt>. Then type:
+You will also need to insert a fake route into <tt>asn4</tt> node, or BGP will refuse to advertise the route you hijacked. Using <tt>ifconfig</tt> discover the interface that has the 10.6.1.1 IP address, e.g., <tt>ethX</tt>. Then type:
 <pre>
   sudo ip route add 10.1.1.0/24 dev ethX
   </pre>
