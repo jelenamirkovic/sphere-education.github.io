@@ -49,8 +49,9 @@
 	<ol>
 	<li><a href="#p1">Analyzing DNS Messages</a></li>
 	<li><a href="#p2">The Big Picture</a></li>
-	<li><a href="#p3">Using Ettercap</a></li>
-	<li><a href="#p4">Implementing DNSSEC</a></li>
+	<li><a href="#p3">Using Ettercap for ARP spoofing</a></li>
+	<li><a href="#p4">Using Bettercap for DNS spoofing</a></li>
+	<li><a href="#p5">Implementing DNSSEC</a></li>
 	</ol>
 </li><li><a href="#glitches">What Can Go Wrong</a>
 </li></ol>
@@ -564,7 +565,7 @@ Use the topology visualization in this document and use <tt>arp</tt> and <tt>ifc
 <li>State the source MAC and IP addresses as well as destination MAC and
  IP addresses for a packet going from the cache to the authoritative 
 server</li>
-<li>Does the packet travel through the attacker box?</li>
+<li>From <b>cache</b> ping <b>auth</b>. Does the packet travel through the attacker box? You can test this by running tcpdump on <b>attacker</b></li>
 </ol>
 
 <p>
@@ -572,7 +573,7 @@ server</li>
 
 </p><p>
 
-</p><h4>Part 3: Using Ettercap</h4>
+</p><h4>Part 3: Using Ettercap for ARP spoofing</h4>
 <p>
 </p><div class="warning"> 
 <p> 
@@ -581,10 +582,8 @@ server</li>
 </p></div> 
 
 <p>
-Login to the <tt>attacker</tt> machine.   Using ettercap,  your 
-objective is to get the DNS query for www.google.com to pass through the
- attacker.   Once you've accomplished this and confirmed that the 
-desired traffic is now passing through the attacker, record the 
+Login to the <tt>attacker</tt> machine.   Using ettercap your 
+objective is to poison <b>cache</b> and <b>auth</b> so that <b>attacker</b> is in their middle. Once you accomplish this record the
 following:
  
 </p><ol>
@@ -592,41 +591,44 @@ following:
 <li>What each option in the command means</li>
 <li>State the source MAC and IP addresses as well as destination MAC and
  IP addresses for a packet going from the cache to the authoritative server</li>
-<li>Does the packet travel through the attacker box?</li>
-<li>If your answers to parts 2.3 and 3.4 differ, explain why</li>
+<li>From <b>cache</b> ping <b>auth</b>. On <b>attacker</b> node run tcpdump. Does the packet travel through the attacker box?</li>
+<li>If your answers to parts 2.3 and 3.3 differ, explain why</li>
 </ol>
 
 
-<p> 
-
+<p>
+  <span class="anchor" id="p4"></span> 
+</p><h4>Part 4: Using Bettercap for DNS spoofing</h4>
 </p><p>
 Now that you can ARP spoof on the network, your goal is to actually 
 filter DNS messages returning to the end-user and replace the IP for 
 "www.google.com." with an IP of your choosing (say the attacker: 
-10.1.2.4). It's possible to do this with a custom made ettercap filter, 
-but due to some of the intricacies of the DNS protocol, it can get quite
- complicated. Since the DNS protocol is not the focus of this exercise, 
-we recommend you use a plug-in built into ettercap called "dns_spoof". 
-You can find the syntax for using a plug-in via the ettercap man page, 
-and the config file for dns_spoof (located at 
-/etc/ettercap/etter.dns) should be self-explanatory. 
-A good example of using ettercap for DNS spoofing is 
-<A HREF="http://www.thegeekstuff.com/2012/05/ettercap-tutorial/">at this page</A>. (These authors use the graphical interface, although the text mode interface is similar.)</p>
+10.1.2.4). For this we will use <b>bettercap</b> since <b>ettercap's</b>
+      DNS spoofing can no longer fool modern DNS resolver software.
 
-<p>Record:</p>
- 
-<ol start="6">
-<p><li>The complete command (or steps in the GUI) used to have <tt>ettercap</tt> forge a DNS message and any necessary configuration files.
-</li><li>What malicious things could an attacker do by changing the IP address in a DNS response going to the client?
+<p>Steps on <b>attacker</b> node:</p>
+<ol> 
+  <li>Run <tt>docker pull bettercap/bettercap</tt>
+  <li>Discover the interface for 10.1.2.4 address using <tt>ifconfig</tt>, say ethX
+  <li>Run <tt>docker run -it --privileged --net=host bettercap/bettercap -iface ethX</tt>. This will open bettercap's UI.
+  <li>Set dns.spoof module to spoof *.google.com and activate it. You can find out how to do that by reading bettercap's documentation <a href="https://www.bettercap.org/modules/ethernet/spoofers/dnsspoof/">here</a>. <b>Wait at least five minutes</b>
+</ol>
+
+
+<p>On <b>client</b> node:
+  <ol start="5">
+	<li>Run <tt>dig www.google.com A</tt> and record the output
+	<li>Record bettercap's commands you have used
+	<li>What malicious things could an attacker do by changing the IP address in a DNS response going to the client?
 </li></ol></p> 
 
 
 </p><p>
-<span class="anchor" id="p4"></span> 
+<span class="anchor" id="p5"></span> 
 
 </p><p>
 
-</p><h4>Part 4: Implementing DNSSEC</h4>
+</p><h4>Part 5: Implementing DNSSEC</h4>
 <p>
   The final task to prevent this type of attack by cryptographically signing the DNS data.   Login to <tt>auth</tt> and follow instructions <a href="https://www.digitalocean.com/community/tutorials/how-to-setup-dnssec-on-an-authoritative-bind-dns-server-2">here</a> to set up DNSSEC. <b>IMPORTANT: Your zone file is already present at /etc/bind/zones/db.google.com. This is the file you should sign.</b>
 
@@ -636,7 +638,7 @@ A good example of using ettercap for DNS spoofing is
 
 <P>Finally, return to the <tt>client</tt> machine and use the command "<tt>dig +dnssec  www.google.com A</tt>" to lookup the IPv4 address for <tt>www.google.com</tt>. You should get a signed response, with AD bit set.
 
-<P>For part 4,  turn in:
+<P>For part 5,  turn in:
 <ol>
 <li>The signed response obtained on the <tt>client</tt> machine
 <li>Detailed description of all the steps you took to implement DNSSEC. Make sure to list all commands you typed and all configuration changes you made.
@@ -649,9 +651,8 @@ A good example of using ettercap for DNS spoofing is
 <p> 
 
 You may want to run the attack again now that your network is DNSSEC 
-enabled. You'll notice that while ettercap is no longer able to 
-successfully implant an IP, it can still cause denial of service because
- all Ethernet traffic is still travelling through it.
+enabled. You'll notice that while bettercap is no longer able to 
+successfully implant an IP, it can still cause denial of service by simply dropping all traffic. 
 
 
 </p></div>
@@ -680,8 +681,9 @@ Submit a .pdf file to your instructor containing your answers to:
 <ol>
 <li>Part 1 Questions 1-6</li>
 <li>Part 2 Questions 1-4</li>
-<li>Part 3 Questions 1-7</li>
-<li>Part 4 Questions 1-2</li>
+<li>Part 3 Questions 1-5</li>
+<li>Part 4 Questions 5-7</li>
+<li>Part 5 Questions 1-2</li>
 </ol>
 
 </div>
