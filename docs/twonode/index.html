@@ -196,7 +196,9 @@ stopexp twonode
 	This will return all the resources to SPHERE.
 
 
-	<span class="anchor" id="wrong">What Can Go Wrong</span>
+	<span class="anchor" id="wrong">
+<div class="level3">
+<h3>What can go wrong</h3></span>
 	<ul>
 	  <li><b>No token provided.</b> This is the error visible in Merge GUI, once you log in and click on XDC or Experiments, or other buttons on the left. One workaround is to open <a href="https://launch.sphere-testbed.net">https://launch.sphere-testbed.net</a> in an incognito window. If that doesn't work, please close your browser completely, reopen it and then use an incognito window.
 	  <li><b>startexp reports many errors.</b> Commands used in <tt>startexp</tt> are asynchronous. They may fail a few times before ultimately succeeding, because they may depend on an earlier asynchronous command. Let <tt>startexp</tt> run its course and if it seems to produce errors by the end of its run, retry it once more. If it fails twice, please ask your instructor or TA for help. They may need to file a ticket with testbed ops.

@@ -382,6 +382,7 @@ padding-right: 2em;
 .infobox heading { font-weight:bold; font-size: large; padding:0; margin:0; }
 
 
+
 .warning { border: 2px solid #ddbbbb;
 padding-right: 2em;
                      color: black; background-color: #ffdddd;
@@ -390,6 +391,15 @@ padding-right: 2em;
                      width:75%; }
 
 .warning heading { font-weight:bold; font-size: large; padding:0; margin:0; }
+
+.ai { border: 2px solid #ddbbbb;
+padding-right: 2em;
+                     color: black; background-color: #bbffee;
+                     text-align:left;
+                     margin: auto; padding-left: 2em;
+                     width:75%; }
+
+.ai heading { font-weight:bold; font-size: large; padding:0; margin:0; }
 
 
 /* PAHP end */

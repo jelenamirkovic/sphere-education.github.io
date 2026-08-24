@@ -225,6 +225,10 @@ The majority of this exercise is easiest to complete simply via command line on 
 <span class="anchor" id="tasks"></span>
 <div class="level3">
 <h3>Tasks</h3>
+<div class="ai">
+<p />
+<img src="alert.png" />Always follow your teacher's guidelines around the use of AI. If use of AI is permitted for this exercise submit <b>additional</b> materials as indicated below for the <b>AI-option</b>.
+</div>
 
 <span class="anchor" id="p1"></span>
 <h4>Part 1: Understanding the Topology</h4>
@@ -235,8 +239,16 @@ The majority of this exercise is easiest to complete simply via command line on 
   sudo ip route del 10.1.1.0/24
     </pre>
   <P>
-    Login to the <tt>client</tt> machine and perform the following tasks:
+    Login to the <tt>client</tt> machine and perform the tasks below. Note your answers on the answer sheet.
 
+<div class="ai">
+    <b>AI-option:</b> If you use AI to <b>run the commands</b> for you, you must provide <i>hand-written</i> answers to ALL the questions noted in the rest of this exercise. You can write the answers on a piece of paper, take a picture of that paper and then add the picture to your submission, in a separate "AI" folder. Also note in that folder:
+            <ol type="a">
+              <li>Which AI you have used? How many tokens did you spend overall? How much time did you spend overall?
+              <li>How many times did you have to prompt the AI to get the final answer? Did you let it run commands for you or just suggest commands and answers
+              <li>Submit all your prompts. Prompts do not have to be hand-written. You can copy-paste the prompts and the results into a file called <tt>prompts.txt</tt> in the "AI" folder.
+	    </ol>
+</div>
 <ol>
 <li> On the command prompt run: <tt> traceroute -n 10.1.1.2 </tt> and record the output of the command (if you see * *s in the output, run the command again). Explain the path from client host 10.5.0.2 to the ftp server host 10.1.1.2. Specifically, note down the intermediate hops and their IP addresses. How many hops away is the ftp server from the client?
 <li> Run <tt> netstat -rn </tt> and record the output. Explain how the client is able to send packets to 10.1.1.2, i.e., what route is the client using to reach the server 10.1.1.2 (don't forget to list the gateway address and mask value). 
@@ -353,6 +365,7 @@ Login to <tt>asn4</tt> machine and perform the following tasks:
 <li value="4"> Run <tt> sudo vtysh -c "show ip bgp" </tt> (no need to record output). What AS path will be used to reach an IP address 10.1.1.2?
 </ol>
 </p>
+
 
 <span class="anchor" id="glitches"></span>
 
