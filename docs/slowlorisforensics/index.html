@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="robots" content="index,nofollow">
 
-    <title>DDoS: Slowloris Attack</title>
+    <title>AI/ML DDoS: Slowloris Attack Detection and Mitigation</title>
 
     <link rel="stylesheet" type="text/css" charset="utf-8" media="all" href="../../css//common.css">
     <link rel="stylesheet" type="text/css" charset="utf-8" media="screen" href="../../css//screen.css">
@@ -15,7 +15,7 @@
     <div id="page" dir="ltr" lang="en">
 
       <!-- Topic -->
-      <h1>Detecting and Handling a Slowloris Attack</h1>
+      <h1>AI/ML DDoS: Slowloris Attack Detection and Mitigation</h1>
       <div class="author">Created by: Jelena Mirkovic, USC-ISI (mirkovic at isi.edu)<br>
       </div>
 
@@ -100,12 +100,12 @@ Think how you may detect a Slowloris connection in traffic. What are its definin
   </div>
   <span class="anchor" id="atraffic"></span>
 <h4>3. Attack Protection</h4>
-Now that you have detected attack connections how would you implement protection from Slowloris attack. Think which features distinguish legitimate from attack connections. Your goal is to set up system tools that normalize all connections to fit the legitimate connection profile. Note: you should not just block the entire attack IP, because it may also be sending legitimate traffic mixed in with the attack. Instead you should find a way to set up your server so that the attack is no longer effective. You can use the <b>iptables</b> and <bb>conntrack</b> tools, already installed on the <tt>server</tt> node, for this task. You can also install new tools. You can use online AI tools to suggest solutions for this task. Once you implement the attack protection repeat traffic collection and traffic analysis steps. Did the protection work? If not, repeat your attempt to implement an effective protection from this attack. Iterate until you get it right. Submit the commands you used in each iteration and note if they were successful or not. Submit the final output of your traffic analysis code.
+Now that you have detected attack connections, how would you implement protection from Slowloris attack? Think which features distinguish legitimate from attack connections. Your goal is to set up system tools that normalize all connections to fit the legitimate connection profile. Note: you should not just block the entire attack IP, because it may also be sending legitimate traffic mixed in with the attack. Instead you should find a way to set up your server so that the attack is no longer effective. You can use the <b>iptables</b> and <bb>conntrack</b> tools, already installed on the <tt>server</tt> node, for this task. You can also install new tools. You can use online AI tools to suggest solutions for this task. Once you implement the attack protection repeat traffic collection and traffic analysis steps. Did the protection work? If not, repeat your attempt to implement an effective protection from this attack. Iterate until you get it right. Submit the commands you used in each iteration and note if they were successful or not. Submit the final output of your traffic analysis code.
 
 <span class="anchor" id="submission"></span>
 <h2>Submission Instructions</h2>
 
-Submit a doument with the following items (label each section):
+Submit a document (e.g., a PDF file) with the following items (label each section):
 <ol>
 <li>Tcpdump command from task 1.
 <li>AI prompts, generated code, analysis code output with attack connections highlighted from task 2.
