@@ -478,8 +478,8 @@ http://example.com/cgi-bin/order.cgi?food=steak&done=charred
 
 <h3 class="anchor" id="setup">Setup</h3>
 <ol>
-	<ol type="1"><li><p />If you don't have an account, follow the instructions <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/classes/">here</a>.
-</li><li>Create an instance of this exercise by following the instructions <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/classes/#working-on-assignments">here</a>, using <font color=red>pathname</font> as Lab name.  Your topology will look like below:<p><img src="topo.png">.
+	<ol type="1"><li><p />If you don't have an account, follow the instructions <a href="https://docs.sphere-testbed.net/experimentation/classes/">here</a>.
+</li><li>Create an instance of this exercise by following the instructions <a href="https://docs.sphere-testbed.net/experimentation/classes/#working-on-assignments">here</a>, using <font color=red>pathname</font> as Lab name.  Your topology will look like below:<p><img src="topo.png">.
 </li><li>After setting up the lab, access your <tt>pathname</tt> node. <p /></ol></ol><p />
 
 
@@ -490,7 +490,7 @@ http://example.com/cgi-bin/order.cgi?food=steak&done=charred
 <p />
 <img src="idea.png" />
 
-You will probably want to set up <a href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/port-forwarding/">port forwarding</a> for tunelling HTTP over ssh so you can test the web application with a browser on your own desktop.<p />
+You will probably want to set up <a href="https://docs.sphere-testbed.net/experimentation/port-forwarding/">port forwarding</a> for tunelling HTTP over ssh so you can test the web application with a browser on your own desktop.<p />
 </div>
 
 </div>
@@ -530,7 +530,7 @@ What this means for you is that modifications to the memo program need to be mad
 <li><p />Find the directory traversal vulnerability by experimenting with the application or by looking in the memo.pl code.</li> 
 	<ul>
 		<li><p />The sourcecode for <tt>memo.cgi</tt> is located in /usr/lib/cgi-bin/memo.pl -- the file <tt>memo.cgi</tt> <b>calls</b> <tt>memo.pl</tt> (see above for more information)</li>
-	<li><p />If you have <a class="http" href="https://mergetb.gitlab.io/testbeds/sphere/sphere-docs/docs/experimentation/xdc/#reaching-an-xdc-via-ssh/">set up ssh tunneling</a> to port <b>80</b> via local port <b>8118</b>, the memo application can be accessed at <a class="http" href="http://localhost:8118/cgi-bin/memo.cgi">http://localhost:8118/cgi-bin/memo.cgi</a></li>
+	<li><p />If you have <a class="http" href="https://docs.sphere-testbed.net/experimentation/xdc/#reaching-an-xdc-via-ssh/">set up ssh tunneling</a> to port <b>80</b> via local port <b>8118</b>, the memo application can be accessed at <a class="http" href="http://localhost:8118/cgi-bin/memo.cgi">http://localhost:8118/cgi-bin/memo.cgi</a></li>
 	</ul>
 	<li><p />Exercise a remote vulnerability in <tt>memo.cgi</tt> to read the private file <tt>/etc/shadow</tt></li> 
 <li><p />Create an executable program demonstrating your exploit. Your program should display or save /etc/shadow. We've created a skeleton exploit script in <tt>/root/submission/exploit.sh</tt>. Edit it with your favorite text editor.</li>
