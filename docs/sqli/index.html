@@ -47,7 +47,8 @@ href="../../css//screen.css">
                <ol>
                   <li><a href="#setup">Setup</a></li>
                   <li>
-                     <a href="#tasks">Tasks</a>
+                    <a href="#tasks">Tasks</a>
+		    
                      <ol>
                         <li><a href="#frobozzco-community-credit-union">FrobozzCo Community Credit Union</a></li>
                      </ol>
@@ -229,6 +230,11 @@ MariaDB&gt; select * from accounts; # print all accounts information</code></pre
          <p><img src="idea.png" /> You will probably want to set up <a href="https://docs.sphere-testbed.net/experimentation/xdc/#reaching-an-xdc-via-ssh">port forwarding</a> for tunelling HTTP over ssh so you can test the web applications with a browser on your own desktop.</p>
       </div>
       <h2 id="tasks">Tasks</h2>
+        <div class="ai">
+<p />
+<img src="alert.png" />Always follow your teacher's guidelines around the use of AI. If use of AI is permitted for this exercise submit <b>additional</b> materials as indicated below for the <b>AI-option</b>.
+</div>
+
       <h3 id="frobozzco-community-credit-union">FrobozzCo Community Credit Union</h3>
       <p>FrobozzCo has its own internal company credit union, FrobozzCo Community Credit Union (FCCU). FCCU has an Internet-accessible web-based application that allows employees to access their paychecks and pay bills via a money wiring system. There are very few bank employees, and they use a a special administrative interface that runs on a different system that is not network accessible. In true FrobozzCo fashion, the public banking software was written in house by the CTO's nephew (who is a nice kid but not the brightest candle on the cake).</p>
       <p>As it turns out, a <em>lot</em> of money has been disappearing from the credit union while you've been gone. It looks like someone has figured out how to force other accounts to wire money... to an anonymous bank account in the Cayman Islands! Worse yet, several employees have had serious identity theft problems of late -- clearly someone has access to personal information and you have a hunch it's all coming from this server. To top it all off, the company itself is showing a deficit of $32,767 and it looks like it was somehow drawn through FCCU.</p>
@@ -290,6 +296,14 @@ MariaDB&gt; select * from accounts; # print all accounts information</code></pre
          </li>
          <li>Use the scripts described in the <a href="#submission-instructions">section</a> for creating a submission tarball.</li>
       </ol>
+      		<div class="ai">
+		  <b>AI-option:</b> If you have used AI to write exploits or patch the code or produce any of the answers, you must provide <i>hand-written</i> answers for the exploit walkthrough and your memo. Also provide hand-written answers to the following questions.  You can write the answers on a piece of paper, take a picture of that paper and then add the picture to your submission, in a separate "AI" folder. Note: you can ask AI to provide answers to the learning questions below.
+            <ol type="a">
+              <li>Which AI you have used? How many tokens did you spend overall? How much time did you spend overall?
+              <li>How many times did you have to prompt the AI to get the final answer? Did you let it run commands for you or just suggest commands and answers
+              <li>Submit all your prompts. Prompts do not have to be hand-written. You can copy-paste the prompts and the results into a file called <tt>prompts.txt</tt> in the "AI" folder.
+              </ol>
+
       <h1 id="submission-instructions">Submission Instructions</h1>
       <p>For this exercise, you will submit a tarball containing your patch, memo, and exploit code. Use the script <code>submit.sh</code> in <code>/root</code> on the <code>server</code> host for creating and restoring those tarballs.</p>
       <h2 id="submit.sh-and-restore.sh">submit.sh and restore.sh</h2>

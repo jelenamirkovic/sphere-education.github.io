@@ -31,24 +31,7 @@ href="../../css//screen.css">
 </li><li><a href="#assignment">Assignment Instructions</a>
 <ol>
 <li><a href="#setup">Setup</a>
-</li><li><a href="#basictasks">Basic Tasks</a>
-<ol>
-<li><a href="#norules">Activate Snort Without Rules</a>
-</li><li><a href="#traffic">Analyze Network Traffic</a>
-</li><li><a href="#basicrules">Write Rules to Guard Against Simple Requests</a>
-</li></ol>
-
-</li><li><a href="#intermediatetasks">Intermediate Tasks</a>
-<ol>
-<li><a href="#dos">DOS Defense</a>
-</li><li><a href="#protection">Securing Traffic on the Network</a>
-</li></ol>
-
-</li><li><a href="#advancedtasks">Advanced Tasks</a>
-<ol>
-<li><a href="#execution">Code Execution Vulnerability</a>
-</li><li><a href="#encoding">Defend Against ASCII Encoding</a>
-</li></ol>
+</li><li><a href="#basictasks">Tasks</a>
 
 </li><li><a href="#glitches">What Can Go Wrong</a>
 </li></ol>
@@ -97,8 +80,13 @@ href="../../css//screen.css">
 
 
 <div class="level3">
-<h2>Basic Tasks</h2>
+<h2>Tasks</h2>
 <span class="anchor" id="basictasks" />
+
+  <div class="ai">
+<p />
+<img src="alert.png" />Always follow your teacher's guidelines around the use of AI. If use of AI is permitted for this exercise submit <b>additional</b> materials as indicated below for the <b>AI-option</b>.
+</div>
 
 <span class="anchor" id="norules" />
 <h3>Start Snort Without Rules</h3>
@@ -122,14 +110,14 @@ href="../../css//screen.css">
 	
 
   <p><b>Questions:</b>
-	<ol>
-		<li>What happens to the traffic to client1 when Snort is running without any rules? 
-		</li><li>Is this a good thing?
-	        </li><li>Can you reconstruct contents of ducky.xml on <tt>router</tt> node?
-		</li><li>Based on Snort's output what can you say about the application?  What port does it connect to?
-		</li><li>What does the "-Q" option do in Snort? Use man page to find out.
-		</li><li>What does the "--daq nfq" option do in Snort? Use man page to find out.
-		</li></ol>
+	<ul>
+		<li>Q1: What happens to the traffic to client1 when Snort is running without any rules? 
+		</li><li>Q2: Is this a good thing?
+	        </li><li>Q3: Can you reconstruct contents of ducky.xml on <tt>router</tt> node?
+		</li><li>Q4: Based on Snort's output what can you say about the application?  What port does it connect to?
+		</li><li>Q5: What does the "-Q" option do in Snort? Use man page to find out.
+		</li><li>Q6: What does the "--daq nfq" option do in Snort? Use man page to find out.
+		</li></ul>
 	</ol>
   </p>
 
@@ -149,12 +137,12 @@ Add the following snort rule that prevents .xml files from being sent out,
   </li><li>Log onto client1, client2 and outsider to see if these rules worked. Try using ftp on these nodes to read classified files. 
   </li></ol>
   <p><b>Questions:</b>
-    <ol start="8">
-      <li>What happens to FTP traffic from <tt>client1</tt> when you run snort? Show the FTP output as <tt>client1</tt> tries to exfiltrate "classified.txt" file.
-		</li><li>What rule did you use to secure the "classified" files?
-		</li><li>Capture and compare the network traffic for the serverwhen filtering these results using your configuration file and when no file is used. Can you recover the contents of classified files? 
-		</li><li>Can you think of any others files or extensions that should be filtered against? You can see what files <tt>server</tt> node has in its <tt>/srv/ftp</tt> folder.
-		</li></ol>
+    <ul>
+      <li>Q7: What happens to FTP traffic from <tt>client1</tt> when you run snort? Show the FTP output as <tt>client1</tt> tries to exfiltrate "classified.txt" file.
+		</li><li>Q8: What rule did you use to secure the "classified" files?
+		</li><li>Q9: Capture and compare the network traffic for the serverwhen filtering these results using your configuration file and when no file is used. Can you recover the contents of classified files? 
+		</li><li>Q10: Can you think of any others files or extensions that should be filtered against? You can see what files <tt>server</tt> node has in its <tt>/srv/ftp</tt> folder.
+		</li></ul>
 	</ol>
   </p>
   </div>
@@ -182,15 +170,24 @@ Add the following snort rule that prevents .xml files from being sent out,
 
   </li></ol>
   <p><b>Questions:</b>
-	<ol start="11">
-		</li><li>Show Snort alerts for NMAP.
-		</li><li>Show your new rule to detect ICMP traffic.
-		</li><li>Show Snort alerts for ICMP flood (a few alerts are enough).
-</li><li>Try changing the action in the new rule to "reject" instead of "drop".  What does this do to the traffic and why do you think this is?  Is this a good or a bad thing?
+    <ul>
+		</li><li>Q11: Show Snort alerts for NMAP.
+		</li><li>Q12: Show your new rule to detect ICMP traffic.
+		</li><li>Q13: Show Snort alerts for ICMP flood (a few alerts are enough).
+</li><li>Q14: Try changing the action in the new rule to "reject" instead of "drop".  What does this do to the traffic and why do you think this is?  Is this a good or a bad thing?
   </ol>
   </p>
  </div>
  
+		<div class="ai">
+		  <b>AI-option:</b> If you have used AI to do any of the tasks above or provide any answers to questions you must provide <i>hand-written</i> answers to the questions  Q1-Q14 and to the questions below. You can write the answers on a piece of paper, take a picture of that paper and then add the picture to your submission, in a separate "AI" folder.
+            <ol type="a">
+              <li>Which AI you have used? How many tokens did you spend overall? How much time did you spend overall?
+              <li>How many times did you have to prompt the AI to get the final answer? Did you let it run commands for you or just suggest commands and answers
+              <li>Submit all your prompts. Prompts do not have to be hand-written. You can copy-paste the prompts and the results into a file called <tt>prompts.txt</tt> in the "AI" folder.
+              </ol>
+</div>
+
 
 <span class="anchor" id="glitches" />
 <div class="level3">
